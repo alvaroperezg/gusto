@@ -1,6 +1,14 @@
-import { Image, SafeAreaView, StyleSheet, Text, View } from "react-native";
+import {
+  Image,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React, { useState } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import TouchableImage from "../components/Plans/TouchableImage";
 
 const NewPlanScreen = ({ navigation }) => {
   const [date, setDate] = useState(new Date());
@@ -29,17 +37,12 @@ const NewPlanScreen = ({ navigation }) => {
             <View style={styles.row}>
               <Text style={styles.rowText}>Comida</Text>
               <View style={styles.imageContainer}>
-                <Image
-                  source={require("../../assets/ppl/javi.jpg")}
-                  style={styles.circleImage}
-                />
-                <Image
+                <TouchableImage source={require("../../assets/ppl/javi.jpg")} />
+                <TouchableImage
                   source={require("../../assets/ppl/diego.jpg")}
-                  style={styles.circleImage}
                 />
-                <Image
+                <TouchableImage
                   source={require("../../assets/ppl/alvaro.jpg")}
-                  style={styles.circleImage}
                 />
               </View>
             </View>
@@ -48,17 +51,12 @@ const NewPlanScreen = ({ navigation }) => {
             <View style={styles.row}>
               <Text style={styles.rowText}>Cena</Text>
               <View style={styles.imageContainer}>
-                <Image
-                  source={require("../../assets/ppl/javi.jpg")}
-                  style={styles.circleImage}
-                />
-                <Image
+                <TouchableImage source={require("../../assets/ppl/javi.jpg")} />
+                <TouchableImage
                   source={require("../../assets/ppl/diego.jpg")}
-                  style={styles.circleImage}
                 />
-                <Image
+                <TouchableImage
                   source={require("../../assets/ppl/alvaro.jpg")}
-                  style={styles.circleImage}
                 />
               </View>
             </View>
