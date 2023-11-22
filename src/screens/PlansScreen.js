@@ -1,12 +1,8 @@
-import {
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { SafeAreaView, StyleSheet, Text, View } from "react-native";
 import React from "react";
-import { Ionicons } from "@expo/vector-icons";
+
+// component imports
+import NewPlanButton from "../components/Plans/NewPlanButton";
 
 const PlansScreen = ({ navigation }) => {
   return (
@@ -16,14 +12,11 @@ const PlansScreen = ({ navigation }) => {
           <Text>No hay planes, tetes</Text>
         </View>
 
-        <TouchableOpacity
-          style={styles.addButton}
+        <NewPlanButton
           onPress={() => {
             /* esto me tiene que llevar a la pantalla de crear un plan */
           }}
-        >
-          <Ionicons name="add" size={24} color="white" />
-        </TouchableOpacity>
+        />
       </View>
     </SafeAreaView>
   );
@@ -42,16 +35,5 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     padding: 20,
-  },
-  addButton: {
-    position: "absolute",
-    right: 32,
-    bottom: 32,
-    backgroundColor: "green",
-    width: 64,
-    height: 64,
-    borderRadius: 999,
-    justifyContent: "center",
-    alignItems: "center",
   },
 });
