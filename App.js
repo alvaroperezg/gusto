@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 // pantallas a importar para navegación
 import PlansScreen from "./src/screens/PlansScreen";
+import NewPlanScreen from "./src/screens/NewPlanScreen";
 
 export default function App() {
   // para navegación entre pantallas
@@ -14,6 +15,11 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Plans">
         <Stack.Screen name="Planes" component={PlansScreen} />
+        <Stack.Screen
+          name="Nuevo plan"
+          component={NewPlanScreen}
+          options={{ presentation: "modal" }}
+        />
         {/* otras pantallas van aquí */}
       </Stack.Navigator>
     </NavigationContainer>
