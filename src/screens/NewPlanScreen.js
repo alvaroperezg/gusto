@@ -9,6 +9,7 @@ import {
 import React, { useState } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import TouchableImage from "../components/Plans/TouchableImage";
+import { Ionicons } from "@expo/vector-icons";
 
 const NewPlanScreen = ({ navigation }) => {
   const [date, setDate] = useState(new Date());
@@ -61,6 +62,15 @@ const NewPlanScreen = ({ navigation }) => {
               </View>
             </View>
           </View>
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => {
+              // Handle the button press here
+              console.log("Add Date button pressed");
+            }}
+          >
+            <Ionicons name="add" size={24} color="white" />
+          </TouchableOpacity>
         </View>
       </View>
     </SafeAreaView>
@@ -108,6 +118,12 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     marginLeft: 10,
     overflow: "hidden",
+  },
+  addButton: {
+    backgroundColor: "gray",
+    padding: 8,
+    borderRadius: 9999,
+    alignItems: "center",
   },
 });
 
