@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   View,
   ScrollView,
+  Text,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import PlanCard from "../components/Plans/PlanCard";
@@ -27,6 +28,11 @@ const NewPlanScreen = ({ navigation }) => {
     setPlanCardDates([...planCardDates, newDate]);
   };
 
+  const createPlan = () => {
+    // Functionality to handle "Crear plan" action
+    console.log("Crear plan action");
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.screen}>
@@ -42,6 +48,9 @@ const NewPlanScreen = ({ navigation }) => {
             <Ionicons name="add" size={24} color="white" />
           </TouchableOpacity>
         </ScrollView>
+        <TouchableOpacity style={styles.createPlanButton} onPress={createPlan}>
+          <Text style={styles.createPlanButtonText}>Crear plan</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -63,6 +72,22 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 9999,
     alignItems: "center",
+  },
+  createPlanButton: {
+    backgroundColor: "green",
+    padding: 15,
+    borderRadius: 9999,
+    position: "absolute",
+    bottom: 20,
+    left: 20,
+    right: 20,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  createPlanButtonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "600",
   },
 });
 
