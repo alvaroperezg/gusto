@@ -1,16 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import TouchableImage from "./TouchableImage";
 
-const PlanCard = ({ initialDate }) => {
+const PlanCard = ({ initialDate, onDateChange }) => {
   const [date, setDate] = useState(initialDate || new Date());
   const [lunchCount, setLunchCount] = useState(3);
   const [dinnerCount, setDinnerCount] = useState(3);
 
+  useEffect(() => {
+    // Ensures the parent component is notified of the initial date
+    if (onDateChange) {
+      onDateChange(date);
+    }
+  }, []);
+
   const onChangeDate = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setDate(currentDate);
+    if (onDateChange) {
+      onDateChange(currentDate);
+    }
   };
 
   const handleLunchToggle = (isActive) => {

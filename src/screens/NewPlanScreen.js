@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   SafeAreaView,
   StyleSheet,
@@ -5,29 +6,38 @@ import {
   View,
   ScrollView,
 } from "react-native";
-import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import PlanCard from "../components/Plans/PlanCard";
 
 const NewPlanScreen = ({ navigation }) => {
-  // state for array of PlanCards
-  const [planCards, setPlanCards] = useState([
-    <PlanCard key={0} initialDate={new Date()} />,
-  ]);
+  // State for storing the dates of PlanCards
+  const [planCardDates, setPlanCardDates] = useState([new Date()]);
 
-  // function to add a new card
+  const updateDate = (index, newDate) => {
+    const updatedDates = [...planCardDates];
+    updatedDates[index] = newDate;
+    setPlanCardDates(updatedDates);
+  };
+
+  // Function to add a new card
   const addPlanCard = () => {
-    const newPlanCard = (
-      <PlanCard key={planCards.length} initialDate={new Date()} />
-    );
-    setPlanCards([...planCards, newPlanCard]);
+    const lastCardDate = planCardDates[planCardDates.length - 1];
+    const newDate = new Date(lastCardDate);
+    newDate.setDate(newDate.getDate() + 1);
+    setPlanCardDates([...planCardDates, newDate]);
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.screen}>
         <ScrollView style={styles.content}>
-          {planCards.map((card) => card)}
+          {planCardDates.map((date, index) => (
+            <PlanCard
+              key={index}
+              initialDate={date}
+              onDateChange={(newDate) => updateDate(index, newDate)}
+            />
+          ))}
           <TouchableOpacity style={styles.addButton} onPress={addPlanCard}>
             <Ionicons name="add" size={24} color="white" />
           </TouchableOpacity>
