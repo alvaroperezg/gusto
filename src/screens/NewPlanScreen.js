@@ -1,25 +1,37 @@
-import { SafeAreaView, StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  SafeAreaView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  ScrollView,
+} from "react-native";
 import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import PlanCard from "../components/Plans/PlanCard";
 
 const NewPlanScreen = ({ navigation }) => {
+  // state for array of PlanCards
+  const [planCards, setPlanCards] = useState([
+    <PlanCard key={0} initialDate={new Date()} />,
+  ]);
+
+  // function to add a new card
+  const addPlanCard = () => {
+    const newPlanCard = (
+      <PlanCard key={planCards.length} initialDate={new Date()} />
+    );
+    setPlanCards([...planCards, newPlanCard]);
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.screen}>
-        <View style={styles.content}>
-          <PlanCard initialDate={new Date()} />
-
-          {/* Button to add another plan card */}
-          <TouchableOpacity
-            style={styles.addButton}
-            onPress={() => {
-              console.log("Add Date button pressed");
-            }}
-          >
+        <ScrollView style={styles.content}>
+          {planCards.map((card) => card)}
+          <TouchableOpacity style={styles.addButton} onPress={addPlanCard}>
             <Ionicons name="add" size={24} color="white" />
           </TouchableOpacity>
-        </View>
+        </ScrollView>
       </View>
     </SafeAreaView>
   );
@@ -34,7 +46,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    flex: 1,
     padding: 20,
   },
   addButton: {
