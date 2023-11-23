@@ -11,37 +11,36 @@ import { Ionicons } from "@expo/vector-icons";
 import PlanCard from "../components/Plans/PlanCard";
 
 const NewPlanScreen = ({ navigation }) => {
-  // State for storing the dates of PlanCards
-  const [planCardDates, setPlanCardDates] = useState([new Date()]);
+  const [plans, setPlans] = useState([
+    { date: new Date(), lunch: 3, dinner: 3 },
+  ]);
 
-  const updateDate = (index, newDate) => {
-    const updatedDates = [...planCardDates];
-    updatedDates[index] = newDate;
-    setPlanCardDates(updatedDates);
+  const updatePlan = (index, updatedPlan) => {
+    const newPlans = [...plans];
+    newPlans[index] = updatedPlan;
+    setPlans(newPlans);
   };
 
-  // Function to add a new card
   const addPlanCard = () => {
-    const lastCardDate = planCardDates[planCardDates.length - 1];
-    const newDate = new Date(lastCardDate);
+    const lastPlanDate = plans[plans.length - 1].date;
+    const newDate = new Date(lastPlanDate);
     newDate.setDate(newDate.getDate() + 1);
-    setPlanCardDates([...planCardDates, newDate]);
+    setPlans([...plans, { date: newDate, lunch: 3, dinner: 3 }]);
   };
 
   const createPlan = () => {
-    // Functionality to handle "Crear plan" action
-    console.log("Crear plan action");
+    console.log("Plans:", plans);
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.screen}>
         <ScrollView style={styles.content}>
-          {planCardDates.map((date, index) => (
+          {plans.map((plan, index) => (
             <PlanCard
               key={index}
-              initialDate={date}
-              onDateChange={(newDate) => updateDate(index, newDate)}
+              plan={plan}
+              onPlanChange={(updatedPlan) => updatePlan(index, updatedPlan)}
             />
           ))}
           <TouchableOpacity style={styles.addButton} onPress={addPlanCard}>
