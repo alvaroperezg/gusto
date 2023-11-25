@@ -15,6 +15,7 @@ import {
   tomaPlanningPrimo,
 } from "./firestore/funciones.js";
 import PlanInfoScreen from "./src/screens/PlanInfoScreen";
+import RecipeInfoScreen from "./src/screens/RecipeInfoScreen.js";
 
 export default function App() {
   // para navegación entre pantallas
@@ -34,6 +35,7 @@ export default function App() {
           component={PlanInfoScreen}
           options={{ headerShown: false }}
         />
+        <Stack.Screen name="Receta" component={RecipeInfoScreen} />
         {/* otras pantallas van aquí */}
       </Stack.Navigator>
     </NavigationContainer>

@@ -191,14 +191,14 @@ const PlanInfoScreen = ({ navigation }) => {
                 title={plan.meals.lunch.title}
                 duration={plan.meals.lunch.duration}
                 peopleCount={plan.meals.lunch.peopleCount}
-                onPress={() => console.log("Lunch Pressed")}
+                onPress={() => navigation.navigate("Receta")}
               />
               <MealCard
                 category="Cena"
                 title={plan.meals.dinner.title}
                 duration={plan.meals.dinner.duration}
                 peopleCount={plan.meals.dinner.peopleCount}
-                onPress={() => console.log("Dinner Pressed")}
+                onPress={() => navigation.navigate("Receta")}
               />
             </View>
           ))}
