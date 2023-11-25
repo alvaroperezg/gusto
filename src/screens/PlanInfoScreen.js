@@ -14,7 +14,7 @@ const PlanInfoScreen = ({ navigation }) => {
   const data = {
     startDate: new Date(2023, 10, 25),
     endDate: new Date(2023, 10, 30),
-    purchasedGroceries: 6,
+    purchasedGroceries: 4,
     allGroceries: 20,
     mealPlans: [
       {
