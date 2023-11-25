@@ -30,6 +30,7 @@ const RecipeInfoScreen = ({ navigation }) => {
   };
 
   const [activeTab, setActiveTab] = useState("ingredients"); // State to manage active tab
+  const [completedSteps, setCompletedSteps] = useState({});
 
   return (
     <SafeAreaView>
@@ -86,12 +87,34 @@ const RecipeInfoScreen = ({ navigation }) => {
                 </View>
               ))
             : data.steps.map((step) => (
-                <View key={step.id} style={styles.stepContainer}>
-                  <View style={styles.stepNumberCircle}>
-                    <Text style={styles.stepNumberText}>{step.id}</Text>
+                <TouchableOpacity
+                  key={step.id}
+                  style={[
+                    styles.stepContainer,
+                    completedSteps[step.id] ? { opacity: 0.4 } : null,
+                  ]}
+                  onPress={() => {
+                    setCompletedSteps({
+                      ...completedSteps,
+                      [step.id]: !completedSteps[step.id],
+                    });
+                  }}
+                >
+                  <View style={{ flex: 1 }}>
+                    <View style={styles.stepNumberCircle}>
+                      <Text style={styles.stepNumberText}>{step.id}</Text>
+                    </View>
+                    <Text style={styles.stepText}>{step.text}</Text>
                   </View>
-                  <Text style={styles.stepText}>{step.text}</Text>
-                </View>
+                  <Ionicons
+                    name={
+                      completedSteps[step.id] ? "checkbox" : "square-outline"
+                    }
+                    size={24}
+                    color="black"
+                    style={{ marginLeft: 8 }}
+                  />
+                </TouchableOpacity>
               ))}
         </View>
       </View>
@@ -161,7 +184,8 @@ const styles = StyleSheet.create({
   },
   stepContainer: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
     backgroundColor: "white",
     padding: 16,
     marginVertical: 4,
@@ -180,6 +204,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginRight: 8,
+    marginBottom: 8,
   },
   stepNumberText: {
     color: "white",
