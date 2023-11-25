@@ -29,7 +29,11 @@ export default function App() {
           component={NewPlanScreen}
           options={{ presentation: "modal" }}
         />
-        <Stack.Screen name="Plan Info" component={PlanInfoScreen} />
+        <Stack.Screen
+          name="Plan Info"
+          component={PlanInfoScreen}
+          options={{ headerShown: false }}
+        />
         {/* otras pantallas van aquí */}
       </Stack.Navigator>
     </NavigationContainer>
