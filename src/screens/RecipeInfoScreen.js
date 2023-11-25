@@ -21,7 +21,10 @@ const RecipeInfoScreen = ({ navigation }) => {
     ],
     steps: [
       { id: 1, text: "Calienta las fajitas." },
-      { id: 2, text: "Moja las fajitas en salsa nakama y a comer." },
+      {
+        id: 2,
+        text: "Moja las fajitas en salsa nakama y a disfrutar de tu maravillosa comida.",
+      },
       // ... more steps
     ],
   };
@@ -83,8 +86,11 @@ const RecipeInfoScreen = ({ navigation }) => {
                 </View>
               ))
             : data.steps.map((step) => (
-                <View key={step.id} style={styles.itemContainer}>
-                  <Text style={styles.itemText}>{step.text}</Text>
+                <View key={step.id} style={styles.stepContainer}>
+                  <View style={styles.stepNumberCircle}>
+                    <Text style={styles.stepNumberText}>{step.id}</Text>
+                  </View>
+                  <Text style={styles.stepText}>{step.text}</Text>
                 </View>
               ))}
         </View>
@@ -152,5 +158,35 @@ const styles = StyleSheet.create({
   },
   itemText: {
     color: "black",
+  },
+  stepContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "white",
+    padding: 16,
+    marginVertical: 4,
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  stepNumberCircle: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: "black",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 8,
+  },
+  stepNumberText: {
+    color: "white",
+    fontWeight: "bold",
+  },
+  stepText: {
+    color: "black",
+    paddingRight: 16,
   },
 });
