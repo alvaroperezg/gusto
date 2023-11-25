@@ -1,11 +1,19 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, Button } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 // pantallas a importar para navegación
 import PlansScreen from "./src/screens/PlansScreen";
 import NewPlanScreen from "./src/screens/NewPlanScreen";
+
+//CONFIGURACION FIRESTORE
+import { db } from "./firestore/config.js";
+import {
+  dameDocManin,
+  dameDocsChacho,
+  tomaPlanningPrimo,
+} from "./firestore/funciones.js";
 import PlanInfoScreen from "./src/screens/PlanInfoScreen";
 
 export default function App() {
