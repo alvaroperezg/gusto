@@ -1,4 +1,4 @@
-import { addDoc, collection, getDocs, doc, getDoc, query, limit} from 'firebase/firestore';
+import { addDoc, collection, getDocs, doc, getDoc, query, limit, where} from 'firebase/firestore';
 import { db } from './config.js'; // Asegúrate de que la ruta es correcta
 
 // Función para obtener los datos de la subcolección específica de un producto
@@ -53,4 +53,22 @@ async function getPlanningManin(){
     }
 }
 
-export {dameDocBro,dameDocsChacho,setPlanningManin,getPlanningManin};
+async function buscaCampoCompa(coleccionBuscar,campoBuscar,valorBuscar) {
+    try {
+        const coleccionRef = collection(db, coleccionBuscar);
+        // const coleccionRef = collection(db, "planings");
+        const q = query(coleccionRef, where( campoBuscar, "==",valorBuscar));
+        // const q = query(coleccionRef, where("dinner", "==", 2));
+        const querySnapshot = await getDocs(q);
+        const arrayDatos = [];
+        querySnapshot.forEach(doc => {
+            arrayDatos.push(doc.data());
+        });
+        return arrayDatos; 
+    } catch (error) {
+        console.error("Error al buscar productos: ", error);
+        return [];
+    }
+}
+
+export {dameDocBro,dameDocsChacho,setPlanningManin,getPlanningManin, buscaCampoCompa};
