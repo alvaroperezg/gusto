@@ -1,8 +1,8 @@
-import { getFirestore, collection, getDocs, doc, getDoc, query, limit} from 'firebase/firestore';
+import { addDoc, collection, getDocs, doc, getDoc, query, limit} from 'firebase/firestore';
 import { db } from './config.js'; // Asegúrate de que la ruta es correcta
 
 // Función para obtener los datos de la subcolección específica de un producto
-async function dameDocManin(productoId) {
+async function dameDocBro(productoId) {
     try {
         const docRef = doc(db, `productos/${productoId}`);
         const documento = await getDoc(docRef);
@@ -24,16 +24,33 @@ async function dameDocsChacho() { //COGE LOS 10 PRIMEROS PRODUCTOS E IMPRIME EN 
     }
 }
 
-async function tomaPlanningPrimo(datosPlanningJSON) {
+async function setPlanningManin(datosPlanningJSON) {
     try {
-        const docRef = doc(db, 'planings');
         const datosPlanning= typeof datosPlanningJSON === 'string' ? JSON.parse(datosPlanningJSON) :datosPlanningJSON;
-        await setDoc(docRef,datosPlanning);
+        const coleccionRef = collection(db, 'planings');
+        const promises = datosPlanning.map(async (planing) => {
+            const docRef = await addDoc(coleccionRef, planing);
+        });
+        await Promise.all(promises);
     } catch (e) {
-        console.error("Error al agregar o actualizar documento: ", e);
+        console.error("Error setPlanningManin: ", e);
     }
 }
 
+async function getPlanningManin(){
+    try {
+        const coleccionRef = collection(db, 'planings');
+        const querySnapshot = await getDocs(coleccionRef);
+        const planingsArray = querySnapshot.docs.map(doc => {
+            return {
+                ...doc.data() 
+            };
+        });
+        // console.log(planingsArray);
+        return planingsArray;
+    } catch (error) {
+        console.error("Error getPlanningManin: ", error);
+    }
+}
 
-// Exporta la función para su uso en otros archivos
-export { dameDocManin ,dameDocsChacho, tomaPlanningPrimo};
+export {dameDocBro,dameDocsChacho,setPlanningManin,getPlanningManin};

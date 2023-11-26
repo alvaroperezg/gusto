@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import PlanCard from "../components/Plans/PlanCard";
+import {setPlanningManin} from "../../firestore/funciones.js";
 
 const NewPlanScreen = ({ navigation }) => {
   const [plans, setPlans] = useState([
@@ -35,7 +36,8 @@ const NewPlanScreen = ({ navigation }) => {
       date: plan.date.toISOString(), // Convert date to ISO string
     }));
 
-    console.log("Serializable Plans:", serializablePlans);
+    // console.log("Serializable Plans:", serializablePlans);
+    setPlanningManin(serializablePlans)
 
     navigation.replace("Plan Info", { plans: serializablePlans });
   };

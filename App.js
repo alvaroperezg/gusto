@@ -6,15 +6,12 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 // pantallas a importar para navegación
 import PlansScreen from "./src/screens/PlansScreen";
 import NewPlanScreen from "./src/screens/NewPlanScreen";
+import PlanInfoScreen from "./src/screens/PlanInfoScreen";
 
 //CONFIGURACION FIRESTORE
 import { db } from "./firestore/config.js";
-import {
-  dameDocManin,
-  dameDocsChacho,
-  tomaPlanningPrimo,
-} from "./firestore/funciones.js";
-import PlanInfoScreen from "./src/screens/PlanInfoScreen";
+import {dameDocBro,dameDocsChacho,setPlanningManin} from "./firestore/funciones.js";
+
 
 export default function App() {
   // para navegación entre pantallas
