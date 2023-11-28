@@ -9,6 +9,11 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import PlanCard from "../components/Plans/PlanCard";
+import {
+  setPlanningManin,
+  buscaCampoCompa,
+  getDatosRecetasParguelas,
+} from "../../firestore/funciones.js";
 
 const NewPlanScreen = ({ navigation }) => {
   // Initialize plans with empty arrays for lunch and dinner
@@ -50,10 +55,11 @@ const NewPlanScreen = ({ navigation }) => {
     // Serialize the dates in the plans before navigation
     const serializablePlans = plans.map((plan) => ({
       ...plan,
-      date: plan.date.toISOString(), // Convert date to ISO string
+      date: plan.date.toISOString().split("T")[0], // Convert date to ISO string
     }));
 
-    console.log("Serializable Plans:", serializablePlans);
+    // console.log("Serializable Plans:", serializablePlans);
+    setPlanningManin(serializablePlans);
 
     navigation.replace("Plan Info", { plans: serializablePlans });
   };
