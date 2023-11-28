@@ -74,9 +74,18 @@ const PlanCard = ({ plan, onPlanChange }) => {
     });
   };
 
+  const isSingleDigitDate = (date) => {
+    return date.getDate() < 10;
+  };
+
   return (
     <View style={styles.card}>
-      <View style={styles.datePickerContainer}>
+      <View
+        style={[
+          styles.datePickerContainer,
+          isSingleDigitDate(date) ? { marginLeft: -21 } : { marginLeft: -12 },
+        ]}
+      >
         {Platform.OS === "android" ? (
           <TouchableOpacity
             style={styles.button}
