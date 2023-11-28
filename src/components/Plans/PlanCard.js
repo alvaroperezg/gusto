@@ -34,16 +34,36 @@ const PlanCard = ({ plan, onPlanChange }) => {
     setShowDatePicker(true);
   };
 
-  const handleLunchToggle = (isActive) => {
-    const updatedLunchCount = isActive ? plan.lunch - 1 : plan.lunch + 1;
-    const updatedPlan = { ...plan, lunch: updatedLunchCount };
-    onPlanChange(updatedPlan);
+  const handleLunchToggle = (name, isActive) => {
+    let updatedLunch = [...plan.lunch];
+    if (isActive) {
+      // Add the name if it's not already in the array
+      if (!updatedLunch.includes(name)) {
+        updatedLunch.push(name);
+      }
+    } else {
+      // Remove the name if it's in the array
+      updatedLunch = updatedLunch.filter((n) => n !== name);
+    }
+    console.log(
+      `handleLunchToggle. Name: ${name}, IsActive: ${isActive}, Updated Lunch: ${updatedLunch}`
+    );
+    onPlanChange({ ...plan, lunch: updatedLunch });
   };
 
-  const handleDinnerToggle = (isActive) => {
-    const updatedDinnerCount = isActive ? plan.dinner - 1 : plan.dinner + 1;
-    const updatedPlan = { ...plan, dinner: updatedDinnerCount };
-    onPlanChange(updatedPlan);
+  const handleDinnerToggle = (name, isActive) => {
+    let updatedDinner = [...plan.dinner];
+    if (isActive) {
+      if (!updatedDinner.includes(name)) {
+        updatedDinner.push(name);
+      }
+    } else {
+      updatedDinner = updatedDinner.filter((n) => n !== name);
+    }
+    console.log(
+      `handleDinnerToggle. Name: ${name}, IsActive: ${isActive}, Updated Dinner: ${updatedDinner}`
+    );
+    onPlanChange({ ...plan, dinner: updatedDinner });
   };
 
   const formatDate = (date) => {
@@ -80,15 +100,18 @@ const PlanCard = ({ plan, onPlanChange }) => {
         <View style={styles.imageContainer}>
           <TouchableImage
             source={require("../../../assets/ppl/javi.jpg")}
-            onToggle={(isActive) => handleLunchToggle(!isActive)}
+            onToggle={(name, isActive) => handleLunchToggle("Javi", isActive)}
+            name="Javi"
           />
           <TouchableImage
             source={require("../../../assets/ppl/diego.jpg")}
-            onToggle={(isActive) => handleLunchToggle(!isActive)}
+            onToggle={(name, isActive) => handleLunchToggle("Diego", isActive)}
+            name="Diego"
           />
           <TouchableImage
             source={require("../../../assets/ppl/alvaro.jpg")}
-            onToggle={(isActive) => handleLunchToggle(!isActive)}
+            onToggle={(name, isActive) => handleLunchToggle("Alvaro", isActive)}
+            name="Alvaro"
           />
         </View>
       </View>
@@ -98,15 +121,20 @@ const PlanCard = ({ plan, onPlanChange }) => {
         <View style={styles.imageContainer}>
           <TouchableImage
             source={require("../../../assets/ppl/javi.jpg")}
-            onToggle={(isActive) => handleDinnerToggle(!isActive)}
+            onToggle={(name, isActive) => handleDinnerToggle("Javi", isActive)}
+            name="Javi"
           />
           <TouchableImage
             source={require("../../../assets/ppl/diego.jpg")}
-            onToggle={(isActive) => handleDinnerToggle(!isActive)}
+            onToggle={(name, isActive) => handleDinnerToggle("Diego", isActive)}
+            name="Diego"
           />
           <TouchableImage
             source={require("../../../assets/ppl/alvaro.jpg")}
-            onToggle={(isActive) => handleDinnerToggle(!isActive)}
+            onToggle={(name, isActive) =>
+              handleDinnerToggle("Alvaro", isActive)
+            }
+            name="Alvaro"
           />
         </View>
       </View>

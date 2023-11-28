@@ -1,13 +1,17 @@
 import React, { useState } from "react";
 import { TouchableOpacity, Image, StyleSheet } from "react-native";
 
-const TouchableImage = ({ source, onToggle }) => {
+const TouchableImage = ({ source, onToggle, name }) => {
   const [isActive, setIsActive] = useState(true);
 
   const handlePress = () => {
-    setIsActive(!isActive);
+    const newActiveState = !isActive;
+    setIsActive(newActiveState);
+    console.log(
+      `TouchableImage pressed. Name: ${name}, New active state: ${newActiveState}`
+    );
     if (onToggle) {
-      onToggle(!isActive);
+      onToggle(name, newActiveState);
     }
   };
 
@@ -15,7 +19,7 @@ const TouchableImage = ({ source, onToggle }) => {
     <TouchableOpacity
       onPress={handlePress}
       activeOpacity={0.5}
-      style={[styles.container, { opacity: isActive ? 1 : 0.5 }]} // Use an array to combine styles
+      style={[styles.container, { opacity: isActive ? 1 : 0.5 }]}
     >
       <Image source={source} style={styles.image} />
     </TouchableOpacity>

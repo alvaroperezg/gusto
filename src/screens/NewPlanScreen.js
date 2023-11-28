@@ -9,35 +9,57 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import PlanCard from "../components/Plans/PlanCard";
-import {setPlanningManin,buscaCampoCompa,getDatosRecetasParguelas} from "../../firestore/funciones.js";
+import {
+  setPlanningManin,
+  buscaCampoCompa,
+  getDatosRecetasParguelas,
+} from "../../firestore/funciones.js";
 
 const NewPlanScreen = ({ navigation }) => {
+  // Initialize plans with empty arrays for lunch and dinner
   const [plans, setPlans] = useState([
-    { date: new Date(), lunch: 3, dinner: 3 , idComida: 3, idCena: 4},
+    {
+      date: new Date(),
+      lunch: ["Javi", "Diego", "Alvaro"],
+      dinner: ["Javi", "Diego", "Alvaro"],
+    },
   ]);
 
   const updatePlan = (index, updatedPlan) => {
     const newPlans = [...plans];
     newPlans[index] = updatedPlan;
     setPlans(newPlans);
+    console.log(
+      `updatePlan called. Index: ${index}, Updated Plan: `,
+      updatedPlan
+    );
   };
 
   const addPlanCard = () => {
     const lastPlanDate = plans[plans.length - 1].date;
     const newDate = new Date(lastPlanDate);
     newDate.setDate(newDate.getDate() + 1);
-    setPlans([...plans, { date: newDate, lunch: 3, dinner: 3 }]);
+    // Set lunch and dinner as empty arrays for the new plan
+    setPlans([
+      ...plans,
+      {
+        date: newDate,
+        lunch: ["Javi", "Diego", "Alvaro"],
+        dinner: ["Javi", "Diego", "Alvaro"],
+      },
+    ]);
   };
 
   const createPlan = () => {
+    console.log("Plans before serialization: ", plans);
+    // Serialize the dates in the plans before navigation
     const serializablePlans = plans.map((plan) => ({
       ...plan,
-      date: plan.date.toISOString().split('T')[0], // Convert date to ISO string
-
+      date: plan.date.toISOString().split("T")[0], // Convert date to ISO string
     }));
 
     // console.log("Serializable Plans:", serializablePlans);
-    setPlanningManin(serializablePlans)
+    setPlanningManin(serializablePlans);
 
     navigation.replace("Plan Info", { plans: serializablePlans });
   };
