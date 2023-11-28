@@ -12,7 +12,7 @@ async function dameDocBro(productoId) {
         console.error("Error al obtener los documentos de la subcolección: ", error);
     }
 }
-async function dameDocsChacho() { //COGE LOS 10 PRIMEROS PRODUCTOS E IMPRIME EN CONSOLA LOS NOMBRES(NOMBRE_REFERENCIA) 
+async function getDocsChacho() {  
     try {
         const q = query(collection(db, "productos"), limit(10));
         const querySnapshot = await getDocs(q);
@@ -56,9 +56,7 @@ async function getPlanningManin(){
 async function buscaCampoCompa(coleccionBuscar,campoBuscar,valorBuscar) {
     try {
         const coleccionRef = collection(db, coleccionBuscar);
-        // const coleccionRef = collection(db, "planings");
-        const q = query(coleccionRef, where( campoBuscar, "==",valorBuscar));
-        // const q = query(coleccionRef, where("dinner", "==", 2));
+        const q = query(coleccionRef, where(campoBuscar, "==",valorBuscar));
         const querySnapshot = await getDocs(q);
         const arrayDatos = [];
         querySnapshot.forEach(doc => {
@@ -66,9 +64,75 @@ async function buscaCampoCompa(coleccionBuscar,campoBuscar,valorBuscar) {
         });
         return arrayDatos; 
     } catch (error) {
-        console.error("Error al buscar productos: ", error);
+        console.error("Error buscaCampoCompa,Se ha intentado buscar ", valorBuscar, " en ", campoBuscar);
         return [];
     }
 }
 
-export {dameDocBro,dameDocsChacho,setPlanningManin,getPlanningManin, buscaCampoCompa};
+async function getIdRecetasPlanning(){
+    try {
+        const coleccionRef = collection(db, 'recetas');
+        const querySnapshot = await getDocs(coleccionRef);
+        const recetasArray = querySnapshot.docs.map(doc => doc.data().ID);
+        console.log(recetasArray);
+        // return planingsArray;
+    } catch (error) {
+        console.error("Error getPlanningManin: ", error);
+    }
+}
+
+async function getDatosRecetasParguelas(idsRecetas){
+    try {
+        const detallesRecetas = [];
+        for (const idReceta of idsRecetas) {
+            buscaCampoCompa("recetas","ID",idReceta).then(data => {
+                // console.log(data)
+                detallesRecetas.push(data);
+            })
+        }
+        // console.log(detallesRecetas);
+        // return detallesRecetas;
+    } catch (error) {
+        console.error("Error al obtener detalles de recetas: ", error);
+        return [];
+    }
+}
+
+async function construirMealPlans() {
+    let mealPlans = [];
+    let fechas = ["2023-11-27"];
+
+    for (let fecha of fechas) {
+        let datosPlaning = await buscaCampoCompa("planings", "date", "2023-11-27")
+        let datosComida= await buscaCampoCompa("recetas","ID",datosPlaning[0].idComida)
+        let titleComida = datosComida[0].NOMBRE
+        let durationComida = datosComida[0].TIEMPO
+        let countComida = datosPlaning[0].lunch
+     
+        let datosCena= await buscaCampoCompa("recetas","ID",datosPlaning[0].idCena)
+        let titleCena = datosCena[0].NOMBRE
+        let durationCena = datosCena[0].TIEMPO
+        let countCena = datosPlaning[0].lunch
+
+        let planDeComidas = {
+            date: new Date(fecha),
+            meals: {
+                lunch: {
+                    title: titleComida,
+                    duration: durationComida,
+                    peopleCount: countComida
+                },
+                dinner: {
+                    title: titleCena,
+                    duration: durationCena,
+                    peopleCount: countCena
+                }
+            }
+        }
+        mealPlans.push(planDeComidas);
+    }
+
+    return mealPlans;
+}
+
+export {dameDocBro,getDocsChacho,setPlanningManin,getPlanningManin, buscaCampoCompa,getDatosRecetasParguelas,construirMealPlans};

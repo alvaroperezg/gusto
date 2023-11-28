@@ -9,82 +9,42 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import MealCard from "../components/Plans/MealCard";
+import {setPlanningManin,buscaCampoCompa,getDatosRecetasParguelas,construirMealPlans} from "../../firestore/funciones.js";
 
 
 const PlanInfoScreen = ({ navigation }) => {
-
-  buscaCampoCompa(coleccionBuscar,campoBuscar,valorBuscar)
-  const data = {
+  const [planingDiario, setplaningDiario] = useState([]);
+  construirMealPlans().then(data => {
+     setplaningDiario(data)
+  });
+  const [data, setData] = useState({
     startDate: new Date(2023, 10, 25),
     endDate: new Date(2023, 10, 30),
     purchasedGroceries: 4,
     allGroceries: 20,
-    mealPlans: [
-      {
-        date: new Date(2023, 10, 25),
-        meals: {
-          lunch: {
-            title: "Grilled Chicken Salad",
-            duration: 30,
-            peopleCount: 2,
-          },
-          dinner: {
-            title: "Pasta with Tomato Sauce",
-            duration: 45,
-            peopleCount: 3,
-          },
-        },
+    mealPlans:{
+      "lunch": {
+        title: "",
+        duration: "",
+        peopleCount: ""
       },
-      {
-        date: new Date(2023, 10, 26),
-        meals: {
-          lunch: {
-            title: "Vegetable Stir Fry",
-            duration: 25,
-            peopleCount: 1,
-          },
-          dinner: {
-            title: "Beef Tacos",
-            duration: 50,
-            peopleCount: 4,
-          },
-        },
-      },
-      {
-        date: new Date(2023, 10, 27),
-        meals: {
-          lunch: {
-            title: "Caesar Salad",
-            duration: 20,
-            peopleCount: 2,
-          },
-          dinner: {
-            title: "Salmon with Asparagus",
-            duration: 35,
-            peopleCount: 2,
-          },
-        },
-      },
-      {
-        date: new Date(2023, 10, 28),
-        meals: {
-          lunch: {
-            title: "Avocado Toast",
-            duration: 15,
-            peopleCount: 1,
-          },
-          dinner: {
-            title: "Chicken Curry",
-            duration: 40,
-            peopleCount: 3,
-          },
-        },
-      },
-      // ... continue adding additional meal plans as needed
-    ],
-
-    // ... other mock data fields
-  };
+      "dinner": {
+          title: "",
+          duration: "",
+          peopleCount: ""
+      }
+      } 
+    });
+  useEffect(() => {
+    const dataUx = {
+      startDate: new Date(2023, 10, 25),
+      endDate: new Date(2023, 10, 30),
+      purchasedGroceries: 4,
+      allGroceries: 20,
+      mealPlans: planingDiario
+    };
+    setData(dataUx)
+  },[planingDiario])
 
   const [activeDate, setActiveDate] = useState(data.startDate);
 
@@ -186,11 +146,13 @@ const PlanInfoScreen = ({ navigation }) => {
         {data.mealPlans
           .filter(
             (plan) => plan.date.toDateString() === activeDate.toDateString()
+            // (plan) => Date(plan.date) === activeDate
           )
           .map((plan, index) => (
             <View key={index}>
               <MealCard
                 category="Comida"
+                // title="prueba"
                 title={plan.meals.lunch.title}
                 duration={plan.meals.lunch.duration}
                 peopleCount={plan.meals.lunch.peopleCount}
