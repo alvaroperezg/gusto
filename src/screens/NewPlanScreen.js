@@ -11,24 +11,42 @@ import { Ionicons } from "@expo/vector-icons";
 import PlanCard from "../components/Plans/PlanCard";
 
 const NewPlanScreen = ({ navigation }) => {
+  // Initialize plans with empty arrays for lunch and dinner
   const [plans, setPlans] = useState([
-    { date: new Date(), lunch: 3, dinner: 3 },
+    {
+      date: new Date(),
+      lunch: ["Javi", "Diego", "Alvaro"],
+      dinner: ["Javi", "Diego", "Alvaro"],
+    },
   ]);
 
   const updatePlan = (index, updatedPlan) => {
     const newPlans = [...plans];
     newPlans[index] = updatedPlan;
     setPlans(newPlans);
+    console.log(
+      `updatePlan called. Index: ${index}, Updated Plan: `,
+      updatedPlan
+    );
   };
 
   const addPlanCard = () => {
     const lastPlanDate = plans[plans.length - 1].date;
     const newDate = new Date(lastPlanDate);
     newDate.setDate(newDate.getDate() + 1);
-    setPlans([...plans, { date: newDate, lunch: 3, dinner: 3 }]);
+    // Set lunch and dinner as empty arrays for the new plan
+    setPlans([
+      ...plans,
+      {
+        date: newDate,
+        lunch: ["Javi", "Diego", "Alvaro"],
+        dinner: ["Javi", "Diego", "Alvaro"],
+      },
+    ]);
   };
 
   const createPlan = () => {
+    console.log("Plans before serialization: ", plans);
     // Serialize the dates in the plans before navigation
     const serializablePlans = plans.map((plan) => ({
       ...plan,
