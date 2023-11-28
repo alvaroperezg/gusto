@@ -14,6 +14,8 @@ const GroceryListScreen = ({ navigation }) => {
     { id: "1", name: "Manzanas", quantity: "2 kg", purchased: false },
     { id: "2", name: "Pan integral", quantity: "500 g", purchased: false },
     { id: "3", name: "Leche de soja", quantity: "1 litro", purchased: false },
+    { id: "4", name: "Crema de cacahuete", quantity: "1 kg", purchased: false },
+    { id: "5", name: "Pechuga de pollo", quantity: "800 g", purchased: false },
   ]);
 
   const togglePurchased = (id) => {
