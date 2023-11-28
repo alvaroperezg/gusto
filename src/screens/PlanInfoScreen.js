@@ -9,8 +9,12 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import MealCard from "../components/Plans/MealCard";
-import {setPlanningManin,buscaCampoCompa,getDatosRecetasParguelas,construirMealPlans} from "../../firestore/funciones.js";
-
+import {
+  setPlanningManin,
+  buscaCampoCompa,
+  getDatosRecetasParguelas,
+  construirMealPlans,
+} from "../../firestore/funciones.js";
 
 const PlanInfoScreen = ({ navigation }) => {
   const [planingDiario, setplaningDiario] = useState([]);
@@ -19,22 +23,22 @@ const PlanInfoScreen = ({ navigation }) => {
     endDate: new Date(2023, 10, 30),
     purchasedGroceries: 4,
     allGroceries: 20,
-    mealPlans:[] 
-    });
- 
+    mealPlans: [],
+  });
+
   useEffect(() => {
-    construirMealPlans().then(data => {
-      setplaningDiario(data)
+    construirMealPlans().then((data) => {
+      setplaningDiario(data);
       const dataUx = {
         startDate: new Date(2023, 10, 25),
         endDate: new Date(2023, 10, 30),
         purchasedGroceries: 4,
         allGroceries: 20,
-        mealPlans: data
+        mealPlans: data,
       };
-      setData(dataUx)
+      setData(dataUx);
     });
-  },[])
+  }, []);
 
   const [activeDate, setActiveDate] = useState(data.startDate);
 
@@ -80,7 +84,10 @@ const PlanInfoScreen = ({ navigation }) => {
         <Text style={styles.dates}>
           {formatDate(data.startDate)} → {formatDate(data.endDate)}
         </Text>
-        <TouchableOpacity style={styles.groceriesListContainer}>
+        <TouchableOpacity
+          style={styles.groceriesListContainer}
+          onPress={() => navigation.navigate("Lista de la compra")}
+        >
           <Text>Lista de la compra</Text>
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <Text>
