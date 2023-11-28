@@ -40,32 +40,28 @@ const GroceryListScreen = ({ navigation }) => {
     <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
         {groceries.map((item) => (
-          <View
+          <TouchableOpacity
             key={item.id}
             style={[
               styles.itemContainer,
               item.purchased ? styles.itemPurchased : null,
             ]}
+            onPress={() => togglePurchased(item.id)}
           >
             <View style={styles.itemTextContainer}>
               <Text style={styles.itemName}>{item.name}</Text>
               <Text style={styles.itemQuantity}>{item.quantity}</Text>
             </View>
-            <TouchableOpacity
-              style={styles.checkbox}
-              onPress={() => togglePurchased(item.id)}
-            >
-              <MaterialCommunityIcons
-                name={
-                  item.purchased
-                    ? "checkbox-marked-circle"
-                    : "checkbox-blank-circle-outline"
-                }
-                size={24}
-                color="gray"
-              />
-            </TouchableOpacity>
-          </View>
+            <MaterialCommunityIcons
+              name={
+                item.purchased
+                  ? "checkbox-marked-circle"
+                  : "checkbox-blank-circle-outline"
+              }
+              size={24}
+              color="gray"
+            />
+          </TouchableOpacity>
         ))}
       </ScrollView>
     </View>
