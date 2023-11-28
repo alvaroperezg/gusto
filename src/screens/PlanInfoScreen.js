@@ -14,37 +14,27 @@ import {setPlanningManin,buscaCampoCompa,getDatosRecetasParguelas,construirMealP
 
 const PlanInfoScreen = ({ navigation }) => {
   const [planingDiario, setplaningDiario] = useState([]);
-  construirMealPlans().then(data => {
-     setplaningDiario(data)
-  });
   const [data, setData] = useState({
     startDate: new Date(2023, 10, 25),
     endDate: new Date(2023, 10, 30),
     purchasedGroceries: 4,
     allGroceries: 20,
-    mealPlans:{
-      "lunch": {
-        title: "",
-        duration: "",
-        peopleCount: ""
-      },
-      "dinner": {
-          title: "",
-          duration: "",
-          peopleCount: ""
-      }
-      } 
+    mealPlans:[] 
     });
+ 
   useEffect(() => {
-    const dataUx = {
-      startDate: new Date(2023, 10, 25),
-      endDate: new Date(2023, 10, 30),
-      purchasedGroceries: 4,
-      allGroceries: 20,
-      mealPlans: planingDiario
-    };
-    setData(dataUx)
-  },[planingDiario])
+    construirMealPlans().then(data => {
+      setplaningDiario(data)
+      const dataUx = {
+        startDate: new Date(2023, 10, 25),
+        endDate: new Date(2023, 10, 30),
+        purchasedGroceries: 4,
+        allGroceries: 20,
+        mealPlans: data
+      };
+      setData(dataUx)
+    });
+  },[])
 
   const [activeDate, setActiveDate] = useState(data.startDate);
 
@@ -141,7 +131,6 @@ const PlanInfoScreen = ({ navigation }) => {
             );
           })}
         </ScrollView>
-
         {/* Display meals for the active date */}
         {data.mealPlans
           .filter(

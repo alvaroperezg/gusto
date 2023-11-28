@@ -100,10 +100,11 @@ async function getDatosRecetasParguelas(idsRecetas){
 
 async function construirMealPlans() {
     let mealPlans = [];
-    let fechas = ["2023-11-27"];
+    let fechas = ["2023-11-28"];
 
     for (let fecha of fechas) {
-        let datosPlaning = await buscaCampoCompa("planings", "date", "2023-11-27")
+        let datosPlaning = await buscaCampoCompa("planings", "date", fecha)
+        console.log(datosPlaning)
         let datosComida= await buscaCampoCompa("recetas","ID",datosPlaning[0].idComida)
         let titleComida = datosComida[0].NOMBRE
         let durationComida = datosComida[0].TIEMPO
