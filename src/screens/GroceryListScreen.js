@@ -17,13 +17,23 @@ const GroceryListScreen = ({ navigation }) => {
   ]);
 
   const togglePurchased = (id) => {
-    const newGroceries = groceries.map((item) => {
-      if (item.id === id) {
-        return { ...item, purchased: !item.purchased };
-      }
-      return item;
+    setGroceries((currentGroceries) => {
+      // First, update the purchased status of the clicked item
+      const updatedGroceries = currentGroceries.map((item) => {
+        if (item.id === id) {
+          return { ...item, purchased: !item.purchased };
+        }
+        return item;
+      });
+
+      // Then, sort the array so unpurchased items are at the top
+      return updatedGroceries.sort((a, b) => {
+        if (a.purchased === b.purchased) {
+          return 0; // No change in order if both have the same purchased status
+        }
+        return a.purchased ? 1 : -1; // Unpurchased items come first
+      });
     });
-    setGroceries(newGroceries);
   };
 
   return (
