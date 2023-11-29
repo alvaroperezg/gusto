@@ -82,22 +82,25 @@ const NewPlanScreen = ({ navigation }) => {
 
   const createPlan = () => {
     console.log("Plans before serialization: ", plans);
-    const serializablePlans = plans.map((plan) => ({
-      date: plan.date.toISOString().split("T")[0], // Convert date to ISO string
-      afternoonMeal: {
-        people: plan.afternoonMeal.people,
-        recipeId: recipeIds[Math.floor(Math.random() * recipeIds.length)],
-      },
-      eveningMeal: {
-        people: plan.eveningMeal.people,
-        recipeId: recipeIds[Math.floor(Math.random() * recipeIds.length)],
-      },
-    }));
 
-    console.log("Serializable Plans:", serializablePlans);
-    createPlanning(serializablePlans);
+    const planningData = {
+      dates: plans.map((plan) => ({
+        date: plan.date.toISOString().split("T")[0], // Convert date to ISO string
+        afternoonMeal: {
+          people: plan.afternoonMeal.people,
+          recipeId: recipeIds[Math.floor(Math.random() * recipeIds.length)],
+        },
+        eveningMeal: {
+          people: plan.eveningMeal.people,
+          recipeId: recipeIds[Math.floor(Math.random() * recipeIds.length)],
+        },
+      })),
+    };
 
-    // navigation.replace("Plan Info", { plans: serializablePlans });
+    console.log("Planning Data:", planningData);
+    createPlanning(planningData);
+
+    // navigation.replace("Plan Info", { plans: planningData });
   };
 
   return (

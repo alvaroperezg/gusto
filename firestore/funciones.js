@@ -52,17 +52,13 @@ async function setPlanningManin(datosPlanningJSON) {
   }
 }
 
-async function createPlanning(plans) {
+async function createPlanning(planningData) {
   try {
-    const coleccionRef = collection(db, "plannings");
-    const promises = plans.map(async (plan) => {
-      // No need to parse, assuming plan is already an object with the correct structure
-      const docRef = await addDoc(coleccionRef, plan);
-      console.log("Planning created with ID:", docRef.id);
-    });
-    await Promise.all(promises);
+    const collectionRef = collection(db, "plannings");
+    const docRef = await addDoc(collectionRef, planningData);
+    console.log("Planning created with ID:", docRef.id);
   } catch (e) {
-    console.error("Error creating plan: ", e);
+    console.error("Error createPlanning: ", e);
   }
 }
 
