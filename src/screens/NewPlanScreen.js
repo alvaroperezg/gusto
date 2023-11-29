@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+
 import {
   SafeAreaView,
   StyleSheet,
@@ -9,21 +10,44 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import PlanCard from "../components/Plans/PlanCard";
+
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../../firestore/config";
+
 import {
   setPlanningManin,
+  createPlanning,
   buscaCampoCompa,
   getDatosRecetasParguelas,
 } from "../../firestore/funciones.js";
 
 const NewPlanScreen = ({ navigation }) => {
-  // Initialize plans with empty arrays for lunch and dinner
+  // Initialize plans
   const [plans, setPlans] = useState([
     {
       date: new Date(),
-      lunch: ["Javi", "Diego", "Alvaro"],
-      dinner: ["Javi", "Diego", "Alvaro"],
+      afternoonMeal: {
+        people: ["Javi", "Diego", "Alvaro"],
+        recipeId: "", // Placeholder
+      },
+      eveningMeal: {
+        people: ["Javi", "Diego", "Alvaro"],
+        recipeId: "", // Placeholder
+      },
     },
   ]);
+
+  const [recipeIds, setRecipeIds] = useState([]);
+
+  useEffect(() => {
+    const fetchRecipes = async () => {
+      const querySnapshot = await getDocs(collection(db, "recipes"));
+      const ids = querySnapshot.docs.map((doc) => doc.id);
+      setRecipeIds(ids);
+    };
+
+    fetchRecipes();
+  }, []);
 
   const updatePlan = (index, updatedPlan) => {
     const newPlans = [...plans];
@@ -39,29 +63,41 @@ const NewPlanScreen = ({ navigation }) => {
     const lastPlanDate = plans[plans.length - 1].date;
     const newDate = new Date(lastPlanDate);
     newDate.setDate(newDate.getDate() + 1);
-    // Set lunch and dinner as empty arrays for the new plan
+
     setPlans([
       ...plans,
       {
         date: newDate,
-        lunch: ["Javi", "Diego", "Alvaro"],
-        dinner: ["Javi", "Diego", "Alvaro"],
+        afternoonMeal: {
+          people: ["Javi", "Diego", "Alvaro"],
+          recipeId: "", // Placeholder for the recipe ID
+        },
+        eveningMeal: {
+          people: ["Javi", "Diego", "Alvaro"],
+          recipeId: "", // Placeholder for the recipe ID
+        },
       },
     ]);
   };
 
   const createPlan = () => {
     console.log("Plans before serialization: ", plans);
-    // Serialize the dates in the plans before navigation
     const serializablePlans = plans.map((plan) => ({
-      ...plan,
       date: plan.date.toISOString().split("T")[0], // Convert date to ISO string
+      afternoonMeal: {
+        people: plan.afternoonMeal.people,
+        recipeId: recipeIds[Math.floor(Math.random() * recipeIds.length)],
+      },
+      eveningMeal: {
+        people: plan.eveningMeal.people,
+        recipeId: recipeIds[Math.floor(Math.random() * recipeIds.length)],
+      },
     }));
 
-    // console.log("Serializable Plans:", serializablePlans);
-    setPlanningManin(serializablePlans);
+    console.log("Serializable Plans:", serializablePlans);
+    createPlanning(serializablePlans);
 
-    navigation.replace("Plan Info", { plans: serializablePlans });
+    // navigation.replace("Plan Info", { plans: serializablePlans });
   };
 
   return (

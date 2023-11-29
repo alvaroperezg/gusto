@@ -35,35 +35,39 @@ const PlanCard = ({ plan, onPlanChange }) => {
   };
 
   const handleLunchToggle = (name, isActive) => {
-    let updatedLunch = [...plan.lunch];
+    let updatedPeople = [...plan.afternoonMeal.people];
     if (isActive) {
-      // Add the name if it's not already in the array
-      if (!updatedLunch.includes(name)) {
-        updatedLunch.push(name);
+      if (!updatedPeople.includes(name)) {
+        updatedPeople.push(name);
       }
     } else {
-      // Remove the name if it's in the array
-      updatedLunch = updatedLunch.filter((n) => n !== name);
+      updatedPeople = updatedPeople.filter((n) => n !== name);
     }
     console.log(
-      `handleLunchToggle. Name: ${name}, IsActive: ${isActive}, Updated Lunch: ${updatedLunch}`
+      `handleLunchToggle. Name: ${name}, IsActive: ${isActive}, Updated People: ${updatedPeople}`
     );
-    onPlanChange({ ...plan, lunch: updatedLunch });
+    onPlanChange({
+      ...plan,
+      afternoonMeal: { ...plan.afternoonMeal, people: updatedPeople },
+    });
   };
 
   const handleDinnerToggle = (name, isActive) => {
-    let updatedDinner = [...plan.dinner];
+    let updatedPeople = [...plan.eveningMeal.people];
     if (isActive) {
-      if (!updatedDinner.includes(name)) {
-        updatedDinner.push(name);
+      if (!updatedPeople.includes(name)) {
+        updatedPeople.push(name);
       }
     } else {
-      updatedDinner = updatedDinner.filter((n) => n !== name);
+      updatedPeople = updatedPeople.filter((n) => n !== name);
     }
     console.log(
-      `handleDinnerToggle. Name: ${name}, IsActive: ${isActive}, Updated Dinner: ${updatedDinner}`
+      `handleDinnerToggle. Name: ${name}, IsActive: ${isActive}, Updated People: ${updatedPeople}`
     );
-    onPlanChange({ ...plan, dinner: updatedDinner });
+    onPlanChange({
+      ...plan,
+      eveningMeal: { ...plan.eveningMeal, people: updatedPeople },
+    });
   };
 
   const formatDate = (date) => {
