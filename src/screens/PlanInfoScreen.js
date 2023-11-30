@@ -88,6 +88,7 @@ const PlanInfoScreen = ({ route, navigation }) => {
                 navigation.navigate("Receta", {
                   recipeId: dateObj.afternoonMeal.recipeId,
                   peopleCount: dateObj.afternoonMeal.people.length,
+                  dateObj: dateObj.afternoonMeal,
                 })
               }
             />
@@ -106,6 +107,7 @@ const PlanInfoScreen = ({ route, navigation }) => {
                 navigation.navigate("Receta", {
                   recipeId: dateObj.eveningMeal.recipeId,
                   peopleCount: dateObj.eveningMeal.people.length,
+                  dateObj: dateObj.eveningMeal,
                 })
               }
             />

@@ -11,7 +11,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { doc, getDoc, getFirestore } from "firebase/firestore";
 
 const RecipeInfoScreen = ({ navigation, route }) => {
-  const { recipeId, peopleCount } = route.params;
+  const { recipeId, peopleCount, dateObj } = route.params;
   const [recipe, setRecipe] = useState(null);
 
   useEffect(() => {
@@ -29,10 +29,18 @@ const RecipeInfoScreen = ({ navigation, route }) => {
       } catch (error) {
         console.error("Error fetching recipe: ", error);
       }
+
+      // After fetching the recipe, check if dateObj is available and use its ingredients
+      if (dateObj && dateObj.adjustedIngredients) {
+        setRecipe((prevRecipe) => ({
+          ...prevRecipe,
+          ingredients: dateObj.adjustedIngredients, // Override ingredients
+        }));
+      }
     };
 
     fetchRecipe();
-  }, [recipeId]);
+  }, [recipeId, dateObj]);
 
   // Helper function to render ingredients
   const renderIngredients = () => {
