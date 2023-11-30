@@ -70,6 +70,16 @@ const PlanInfoScreen = ({ route, navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate("Lista de la compra", { planningId })
+          }
+          style={styles.groceryListButton}
+        >
+          <Text style={styles.groceryListButtonText}>
+            Ver lista de la compra
+          </Text>
+        </TouchableOpacity>
         {planning?.dates.map((dateObj, index) => (
           <View key={index}>
             <Text style={styles.dateText}>{formatDate(dateObj.date)}</Text>
@@ -130,9 +140,25 @@ const styles = StyleSheet.create({
   dateText: {
     fontSize: 18,
     fontWeight: "bold",
-    // other styles for the date text
   },
-  // add other styles as needed
+  groceryListButton: {
+    backgroundColor: "#4CAF50",
+    padding: 15,
+    borderRadius: 5,
+    margin: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    elevation: 5,
+  },
+  groceryListButtonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "500",
+  },
 });
 
 export default PlanInfoScreen;

@@ -79,6 +79,32 @@ const NewPlanScreen = ({ navigation }) => {
     ]);
   };
 
+  const aggregateIngredients = (plans) => {
+    const allIngredients = {};
+
+    plans.forEach((plan) => {
+      // Aggregate ingredients from afternoon and evening meals
+      [
+        ...plan.afternoonMeal.adjustedIngredients,
+        ...plan.eveningMeal.adjustedIngredients,
+      ].forEach((ingredient) => {
+        if (allIngredients[ingredient.ingredient_id]) {
+          // Sum the quantities if the ingredient already exists
+          allIngredients[ingredient.ingredient_id].quantity +=
+            ingredient.quantity;
+        } else {
+          // Add the ingredient with the purchased flag
+          allIngredients[ingredient.ingredient_id] = {
+            ...ingredient,
+            purchased: false,
+          };
+        }
+      });
+    });
+
+    return Object.values(allIngredients); // Convert the object back to an array
+  };
+
   const createPlan = async () => {
     console.log("Plans before serialization: ", plans);
 
@@ -150,7 +176,10 @@ const NewPlanScreen = ({ navigation }) => {
         return; // Exit the function
       }
 
-      const planningData = { dates: validAdjustedPlans };
+      // Aggregate ingredients to create the grocery list
+      const groceryList = aggregateIngredients(validAdjustedPlans);
+
+      const planningData = { dates: validAdjustedPlans, groceryList };
       console.log("Creating Planning Data:", planningData);
 
       // Save the new planning data with adjusted ingredient quantities
