@@ -26,44 +26,9 @@ async function adjustIngredientQuantities(ingredients, servings) {
   return adjustedIngredients;
 }
 
-// Function to get adjusted quantity for a single ingredient using Chat API
-async function getAdjustedQuantity(quantity, servings, name) {
-  try {
-    const messages = [
-      { role: "system", content: "Process this command." },
-      {
-        role: "user",
-        content: `If a recipe calls for ${quantity} of ${name} for one serving, how much would be needed for ${servings} servings?`,
-      },
-    ];
-
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer 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`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "gpt-3.5-turbo",
-        messages: messages,
-      }),
-    });
-
-    const data = await response.json();
-
-    if (
-      !data.choices ||
-      data.choices.length === 0 ||
-      !data.choices[0].message.content
-    ) {
-      throw new Error("Invalid response from OpenAI API");
-    }
-
-    return data.choices[0].message.content.trim(); // Return the adjusted quantity as a string
-  } catch (error) {
-    console.error(`Error adjusting quantity for ${name}:`, error);
-    throw error;
-  }
+function getAdjustedQuantity(quantityInGrams, servings) {
+  const adjustedQuantity = quantityInGrams * servings;
+  return adjustedQuantity;
 }
 
 export { adjustIngredientQuantities };

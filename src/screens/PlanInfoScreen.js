@@ -83,7 +83,7 @@ const PlanInfoScreen = ({ route, navigation }) => {
                   ? `${recipes[dateObj.afternoonMeal.recipeId].prepTime} min`
                   : "Loading..."
               }
-              peopleCount={dateObj.eveningMeal.people.length.toString()}
+              peopleCount={dateObj.afternoonMeal.people.length.toString()}
               onPress={() =>
                 navigation.navigate("Receta", {
                   recipeId: dateObj.afternoonMeal.recipeId,

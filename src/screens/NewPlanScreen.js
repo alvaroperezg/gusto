@@ -100,8 +100,8 @@ const NewPlanScreen = ({ navigation }) => {
           );
 
           // Debug logs
-          console.log("Afternoon recipe details:", afternoonRecipeDetails);
-          console.log("Evening recipe details:", eveningRecipeDetails);
+          // console.log("Afternoon recipe details:", afternoonRecipeDetails);
+          // console.log("Evening recipe details:", eveningRecipeDetails);
 
           // Check if recipe details were successfully fetched
           if (!afternoonRecipeDetails || !eveningRecipeDetails) {
@@ -110,16 +110,20 @@ const NewPlanScreen = ({ navigation }) => {
           }
 
           // Adjust quantities based on the number of people for each meal
-          const adjustedAfternoonMealIngredients =
-            await adjustIngredientQuantities(
-              afternoonRecipeDetails.ingredients,
-              plan.afternoonMeal.people.length
-            );
-          const adjustedEveningMealIngredients =
-            await adjustIngredientQuantities(
-              eveningRecipeDetails.ingredients,
-              plan.eveningMeal.people.length
-            );
+          const adjustIngredients = (ingredients, peopleCount) =>
+            ingredients.map((ingredient) => ({
+              ...ingredient,
+              quantity: ingredient.quantity * peopleCount, // Adjusting quantity
+            }));
+
+          const adjustedAfternoonMealIngredients = adjustIngredients(
+            afternoonRecipeDetails.ingredients,
+            plan.afternoonMeal.people.length
+          );
+          const adjustedEveningMealIngredients = adjustIngredients(
+            eveningRecipeDetails.ingredients,
+            plan.eveningMeal.people.length
+          );
 
           // Return a new plan object with adjusted ingredients
           return {
