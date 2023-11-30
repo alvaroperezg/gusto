@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   scrollView: {
-    // styles for your scroll view
+    padding: 20,
   },
   dateText: {
     fontSize: 18,

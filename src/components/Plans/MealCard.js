@@ -6,7 +6,7 @@ const MealCard = ({ category, title, duration, peopleCount, onPress }) => (
     <View>
       <Text style={styles.mealCategory}>{category}</Text>
       <Text style={styles.mealTitle}>{title}</Text>
-      <Text style={styles.mealDuration}>{duration} min</Text>
+      <Text style={styles.mealDuration}>{duration}</Text>
       <Text style={styles.mealPeople}>{peopleCount} personas</Text>
     </View>
   </TouchableOpacity>

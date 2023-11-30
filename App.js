@@ -34,7 +34,7 @@ export default function App() {
         <Stack.Screen
           name="Plan Info"
           component={PlanInfoScreen}
-          options={{ headerShown: false }}
+          options={{ headerShown: true }}
         />
         <Stack.Screen name="Lista de la compra" component={GroceryListScreen} />
         <Stack.Screen name="Receta" component={RecipeInfoScreen} />
