@@ -84,12 +84,6 @@ const PlanInfoScreen = ({ route, navigation }) => {
                   : "Loading..."
               }
               peopleCount={dateObj.afternoonMeal.people.length.toString()}
-              // onPress={() =>
-              //   navigation.navigate("Receta", {
-              //     recipeId: dateObj.afternoonMeal.recipeId,
-              //     peopleCount: dateObj.afternoonMeal.people.length,
-              //   })
-              // }
               onPress={() =>
                 navigation.navigate("Receta", {
                   recipeId: dateObj.afternoonMeal.recipeId,
@@ -109,12 +103,6 @@ const PlanInfoScreen = ({ route, navigation }) => {
                   : "Loading..."
               }
               peopleCount={dateObj.eveningMeal.people.length.toString()}
-              // onPress={() =>
-              //   navigation.navigate("Receta", {
-              //     recipeId: dateObj.eveningMeal.recipeId,
-              //     peopleCount: dateObj.eveningMeal.people.length,
-              //   })
-              // }
               onPress={() =>
                 navigation.navigate("Receta", {
                   recipeId: dateObj.eveningMeal.recipeId,
