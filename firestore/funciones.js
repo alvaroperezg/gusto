@@ -71,10 +71,11 @@ export const fetchRecipeDetails = async (recipeId) => {
     const recipeSnap = await getDoc(recipeRef);
 
     if (recipeSnap.exists()) {
-      // Assuming the recipe document has 'title' and 'prepTime' fields
+      console.log("Recipe data:", recipeSnap.data());
       return {
-        title: recipeSnap.data().title,
+        name: recipeSnap.data().name,
         prepTime: recipeSnap.data().prepTime,
+        ingredients: recipeSnap.data().ingredients,
       };
     } else {
       console.log("No such recipe!");

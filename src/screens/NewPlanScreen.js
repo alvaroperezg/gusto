@@ -14,7 +14,11 @@ import PlanCard from "../components/Plans/PlanCard";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../firestore/config";
 
-import { createPlanning } from "../../firestore/funciones.js";
+import {
+  createPlanning,
+  fetchRecipeDetails,
+} from "../../firestore/funciones.js";
+import { adjustIngredientQuantities } from "../utils/adjustedQuantities.js";
 
 const NewPlanScreen = ({ navigation }) => {
   // Initialize plans
@@ -78,24 +82,78 @@ const NewPlanScreen = ({ navigation }) => {
   const createPlan = async () => {
     console.log("Plans before serialization: ", plans);
 
-    const planningData = {
-      dates: plans.map((plan) => ({
-        date: plan.date.toISOString().split("T")[0],
-        afternoonMeal: {
-          people: plan.afternoonMeal.people,
-          recipeId: recipeIds[Math.floor(Math.random() * recipeIds.length)],
-        },
-        eveningMeal: {
-          people: plan.eveningMeal.people,
-          recipeId: recipeIds[Math.floor(Math.random() * recipeIds.length)],
-        },
-      })),
-    };
-
     try {
+      const adjustedPlans = await Promise.all(
+        plans.map(async (plan) => {
+          // Assign a random recipe ID to each meal
+          const afternoonMealRecipeId =
+            recipeIds[Math.floor(Math.random() * recipeIds.length)];
+          const eveningMealRecipeId =
+            recipeIds[Math.floor(Math.random() * recipeIds.length)];
+
+          // Fetch recipe details for afternoon and evening meals
+          const afternoonRecipeDetails = await fetchRecipeDetails(
+            afternoonMealRecipeId
+          );
+          const eveningRecipeDetails = await fetchRecipeDetails(
+            eveningMealRecipeId
+          );
+
+          // Debug logs
+          console.log("Afternoon recipe details:", afternoonRecipeDetails);
+          console.log("Evening recipe details:", eveningRecipeDetails);
+
+          // Check if recipe details were successfully fetched
+          if (!afternoonRecipeDetails || !eveningRecipeDetails) {
+            console.error("Recipe details not found for one or more meals.");
+            return null; // Skip this iteration
+          }
+
+          // Adjust quantities based on the number of people for each meal
+          const adjustedAfternoonMealIngredients =
+            await adjustIngredientQuantities(
+              afternoonRecipeDetails.ingredients,
+              plan.afternoonMeal.people.length
+            );
+          const adjustedEveningMealIngredients =
+            await adjustIngredientQuantities(
+              eveningRecipeDetails.ingredients,
+              plan.eveningMeal.people.length
+            );
+
+          // Return a new plan object with adjusted ingredients
+          return {
+            date: plan.date.toISOString().split("T")[0],
+            afternoonMeal: {
+              people: plan.afternoonMeal.people,
+              recipeId: afternoonMealRecipeId,
+              adjustedIngredients: adjustedAfternoonMealIngredients,
+            },
+            eveningMeal: {
+              people: plan.eveningMeal.people,
+              recipeId: eveningMealRecipeId,
+              adjustedIngredients: adjustedEveningMealIngredients,
+            },
+          };
+        })
+      );
+
+      // Filter out null entries (if any)
+      const validAdjustedPlans = adjustedPlans.filter((plan) => plan !== null);
+
+      if (validAdjustedPlans.length === 0) {
+        console.error("No valid plans were created.");
+        return; // Exit the function
+      }
+
+      const planningData = { dates: validAdjustedPlans };
       console.log("Creating Planning Data:", planningData);
+
+      // Save the new planning data with adjusted ingredient quantities
       const docRef = await createPlanning(planningData);
       console.log("Planning created with ID:", docRef.id);
+
+      // Navigate to the Plan Info screen with the new planning ID
       navigation.replace("Plan Info", { planningId: docRef.id });
     } catch (error) {
       console.error("Error creating planning: ", error);
