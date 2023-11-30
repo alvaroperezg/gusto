@@ -14,12 +14,7 @@ import PlanCard from "../components/Plans/PlanCard";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../firestore/config";
 
-import {
-  setPlanningManin,
-  createPlanning,
-  buscaCampoCompa,
-  getDatosRecetasParguelas,
-} from "../../firestore/funciones.js";
+import { createPlanning } from "../../firestore/funciones.js";
 
 const NewPlanScreen = ({ navigation }) => {
   // Initialize plans
@@ -80,12 +75,12 @@ const NewPlanScreen = ({ navigation }) => {
     ]);
   };
 
-  const createPlan = () => {
+  const createPlan = async () => {
     console.log("Plans before serialization: ", plans);
 
     const planningData = {
       dates: plans.map((plan) => ({
-        date: plan.date.toISOString().split("T")[0], // Convert date to ISO string
+        date: plan.date.toISOString().split("T")[0],
         afternoonMeal: {
           people: plan.afternoonMeal.people,
           recipeId: recipeIds[Math.floor(Math.random() * recipeIds.length)],
@@ -97,10 +92,15 @@ const NewPlanScreen = ({ navigation }) => {
       })),
     };
 
-    console.log("Planning Data:", planningData);
-    createPlanning(planningData);
-
-    // navigation.replace("Plan Info", { plans: planningData });
+    try {
+      console.log("Creating Planning Data:", planningData);
+      const docRef = await createPlanning(planningData);
+      console.log("Planning created with ID:", docRef.id);
+      navigation.replace("Plan Info", { planningId: docRef.id });
+    } catch (error) {
+      console.error("Error creating planning: ", error);
+      // Optionally, provide feedback to the user that an error occurred
+    }
   };
 
   return (

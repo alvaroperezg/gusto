@@ -57,10 +57,34 @@ async function createPlanning(planningData) {
     const collectionRef = collection(db, "plannings");
     const docRef = await addDoc(collectionRef, planningData);
     console.log("Planning created with ID:", docRef.id);
+    return docRef; // Return the document reference
   } catch (e) {
     console.error("Error createPlanning: ", e);
+    throw e; // It's a good practice to re-throw the error so it can be handled by the caller
   }
 }
+
+// Function to get recipe details by ID
+export const fetchRecipeDetails = async (recipeId) => {
+  try {
+    const recipeRef = doc(db, "recipes", recipeId);
+    const recipeSnap = await getDoc(recipeRef);
+
+    if (recipeSnap.exists()) {
+      // Assuming the recipe document has 'title' and 'prepTime' fields
+      return {
+        title: recipeSnap.data().title,
+        prepTime: recipeSnap.data().prepTime,
+      };
+    } else {
+      console.log("No such recipe!");
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching recipe details: ", error);
+    return null;
+  }
+};
 
 async function getPlanningManin() {
   try {

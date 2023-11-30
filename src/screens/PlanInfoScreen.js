@@ -9,231 +9,118 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import MealCard from "../components/Plans/MealCard";
-import {
-  setPlanningManin,
-  buscaCampoCompa,
-  getDatosRecetasParguelas,
-  construirMealPlans,
-} from "../../firestore/funciones.js";
+import { doc, getDoc, getFirestore } from "firebase/firestore";
 
-const PlanInfoScreen = ({ navigation }) => {
-  const [planingDiario, setplaningDiario] = useState([]);
-  const [data, setData] = useState({
-    startDate: new Date(2023, 10, 25),
-    endDate: new Date(2023, 10, 30),
-    purchasedGroceries: 4,
-    allGroceries: 20,
-    mealPlans: [],
-  });
+const PlanInfoScreen = ({ route, navigation }) => {
+  const { planningId } = route.params;
+  const [planning, setPlanning] = useState(null);
+  const [recipes, setRecipes] = useState({});
 
   useEffect(() => {
-    construirMealPlans().then((data) => {
-      setplaningDiario(data);
-      const dataUx = {
-        startDate: new Date(2023, 10, 25),
-        endDate: new Date(2023, 10, 30),
-        purchasedGroceries: 4,
-        allGroceries: 20,
-        mealPlans: data,
-      };
-      setData(dataUx);
-    });
-  }, []);
+    const db = getFirestore();
+    const fetchPlanning = async () => {
+      try {
+        const docRef = doc(db, "plannings", planningId);
+        const docSnap = await getDoc(docRef);
 
-  const [activeDate, setActiveDate] = useState(data.startDate);
+        if (docSnap.exists()) {
+          const planningData = docSnap.data();
+          planningData.dates = planningData.dates.map((dateObj) => ({
+            ...dateObj,
+            date: new Date(dateObj.date),
+          }));
+          setPlanning(planningData);
 
-  useEffect(() => {
-    // Set the active date to today's date if it falls within the range
-    const today = new Date();
-    if (today >= data.startDate && today <= data.endDate) {
-      setActiveDate(today);
-    }
-  }, []);
+          const uniqueRecipeIds = [
+            ...new Set(
+              planningData.dates.flatMap((dateObj) => [
+                dateObj.afternoonMeal.recipeId,
+                dateObj.eveningMeal.recipeId,
+              ])
+            ),
+          ];
+          const recipeDetails = {};
+          for (const recipeId of uniqueRecipeIds) {
+            if (!recipeDetails[recipeId]) {
+              // Check if not already fetched
+              const recipeDoc = await getDoc(doc(db, "recipes", recipeId));
+              if (recipeDoc.exists()) {
+                recipeDetails[recipeId] = recipeDoc.data();
+              } else {
+                console.log(`No such recipe with ID: ${recipeId}`);
+              }
+            }
+          }
+          setRecipes(recipeDetails);
+        } else {
+          console.log("No such planning!");
+        }
+      } catch (error) {
+        console.error("Error fetching planning: ", error);
+      }
+    };
 
-  // Function to format the date as a string
-  const formatDate = (date) => {
-    const options = { day: "numeric", month: "long" };
-    return date.toLocaleDateString("es-ES", options);
-  };
+    fetchPlanning();
+  }, [planningId]);
 
-  // Function to generate an array of dates between the start and end date
-  const getDatesInRange = (startDate, endDate) => {
-    const dates = [];
-    let currentDate = new Date(startDate.getTime());
-
-    while (currentDate <= endDate) {
-      dates.push(new Date(currentDate));
-      currentDate.setDate(currentDate.getDate() + 1);
-    }
-
-    return dates;
-  };
-
-  // Generate the array of dates for the calendar row
-  const calendarDates = getDatesInRange(data.startDate, data.endDate);
-
-  // Function to handle date selection
-  const handleDateSelection = (selectedDate) => {
-    setActiveDate(selectedDate);
-  };
+  // Helper function to format date
+  const formatDate = (date) =>
+    date.toLocaleDateString("es-ES", { day: "numeric", month: "long" });
 
   return (
-    <SafeAreaView>
-      <View style={styles.content}>
-        <Text style={styles.title}>Tu plan de comidas</Text>
-        <Text style={styles.dates}>
-          {formatDate(data.startDate)} → {formatDate(data.endDate)}
-        </Text>
-        <TouchableOpacity
-          style={styles.groceriesListContainer}
-          onPress={() => navigation.navigate("Lista de la compra")}
-        >
-          <Text>Lista de la compra</Text>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <Text>
-              {data.purchasedGroceries}/{data.allGroceries}
-            </Text>
-            <Ionicons
-              name="chevron-forward"
-              size={24}
-              color="gray"
-              style={{ marginLeft: 4 }}
+    <SafeAreaView style={styles.container}>
+      <ScrollView style={styles.scrollView}>
+        {planning?.dates.map((dateObj, index) => (
+          <View key={index}>
+            <Text style={styles.dateText}>{formatDate(dateObj.date)}</Text>
+            <MealCard
+              category="Comida"
+              title={
+                recipes[dateObj.afternoonMeal.recipeId]?.name || "Loading..."
+              }
+              duration={
+                recipes[dateObj.afternoonMeal.recipeId]?.prepTime
+                  ? `${recipes[dateObj.afternoonMeal.recipeId].prepTime} min`
+                  : "Loading..."
+              }
+              peopleCount={dateObj.afternoonMeal.people.length.toString()}
+              // onPress or other properties as needed
+            />
+            <MealCard
+              category="Cena"
+              title={
+                recipes[dateObj.eveningMeal.recipeId]?.name || "Loading..."
+              }
+              duration={
+                recipes[dateObj.eveningMeal.recipeId]?.prepTime
+                  ? `${recipes[dateObj.eveningMeal.recipeId].prepTime} min`
+                  : "Loading..."
+              }
+              peopleCount={dateObj.eveningMeal.people.length.toString()}
+              // onPress or other properties as needed
             />
           </View>
-        </TouchableOpacity>
-
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.calendarContentContainer}
-          style={styles.calendarRow}
-        >
-          {calendarDates.map((date, index) => {
-            const isActive = date.toDateString() === activeDate.toDateString();
-            return (
-              <TouchableOpacity
-                key={index}
-                style={styles.dateContainer}
-                onPress={() => handleDateSelection(date)}
-              >
-                <Text style={styles.dayLetter}>
-                  {date.toLocaleDateString("es-ES", { weekday: "short" })[0]}
-                </Text>
-                <View
-                  style={[
-                    styles.dateCircle,
-                    isActive && styles.activeDateCircle,
-                  ]}
-                >
-                  <Text
-                    style={[
-                      styles.dateNumber,
-                      isActive && styles.activeDateText,
-                    ]}
-                  >
-                    {date.getDate()}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
-        {/* Display meals for the active date */}
-        {data.mealPlans
-          .filter(
-            (plan) => plan.date.toDateString() === activeDate.toDateString()
-            // (plan) => Date(plan.date) === activeDate
-          )
-          .map((plan, index) => (
-            <View key={index}>
-              <MealCard
-                category="Comida"
-                // title="prueba"
-                title={plan.meals.lunch.title}
-                duration={plan.meals.lunch.duration}
-                peopleCount={plan.meals.lunch.peopleCount}
-                onPress={() => navigation.navigate("Receta")}
-              />
-              <MealCard
-                category="Cena"
-                title={plan.meals.dinner.title}
-                duration={plan.meals.dinner.duration}
-                peopleCount={plan.meals.dinner.peopleCount}
-                onPress={() => navigation.navigate("Receta")}
-              />
-            </View>
-          ))}
-      </View>
+        ))}
+      </ScrollView>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  content: {
-    padding: 20,
+  // Define your styles here
+  container: {
+    flex: 1,
+    padding: 10,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "600",
+  scrollView: {
+    // styles for your scroll view
   },
-  dates: {
-    marginTop: 8,
-    color: "gray",
+  dateText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    // other styles for the date text
   },
-  groceriesListContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 20,
-    padding: 16,
-    backgroundColor: "white",
-    borderRadius: 12,
-    // iOS shadow properties
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    // Android shadow property
-    elevation: 3,
-  },
-  calendarRow: {
-    marginVertical: 20,
-  },
-  calendarContentContainer: {
-    paddingHorizontal: 10,
-    alignItems: "center",
-  },
-  dateContainer: {
-    alignItems: "center",
-    marginRight: 24,
-  },
-  dayLetter: {
-    color: "black",
-    fontWeight: "500",
-  },
-  dateCircle: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: "lightgray",
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 4,
-  },
-  activeDateCircle: {
-    backgroundColor: "green",
-  },
-  dateNumber: {
-    color: "black",
-  },
-  activeDateText: {
-    color: "white",
-  },
-  recipesText: {
-    fontWeight: "400",
-    marginTop: 24,
-    color: "black",
-  },
+  // add other styles as needed
 });
 
 export default PlanInfoScreen;
