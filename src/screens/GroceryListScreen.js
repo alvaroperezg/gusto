@@ -21,7 +21,9 @@ const PlanGroceryList = ({ route, navigation }) => {
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-          setGroceryList(docSnap.data().groceryList || []);
+          const fetchedList = docSnap.data().groceryList || [];
+          fetchedList.sort((a, b) => (a.purchased ? 1 : -1));
+          setGroceryList(fetchedList);
         } else {
           console.log("No such planning!");
         }
@@ -34,12 +36,19 @@ const PlanGroceryList = ({ route, navigation }) => {
   }, [planningId]);
 
   const togglePurchased = async (ingredientId) => {
-    // Function to toggle the 'purchased' state of an ingredient
     const newList = groceryList.map((item) =>
       item.ingredient_id === ingredientId
         ? { ...item, purchased: !item.purchased }
         : item
     );
+
+    // Sort the list so that unpurchased items are at the top
+    newList.sort((a, b) => {
+      if (a.purchased === b.purchased) {
+        return 0; // No change in order if both have the same purchased state
+      }
+      return a.purchased ? 1 : -1; // Unpurchased items come first
+    });
 
     setGroceryList(newList);
 
