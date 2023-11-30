@@ -6,6 +6,7 @@ import {
   View,
 } from "react-native";
 import React, { useEffect, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import { collection, getDocs, getFirestore } from "firebase/firestore";
 
 // component imports
@@ -36,19 +37,35 @@ const PlansScreen = ({ navigation }) => {
     );
   };
 
-  useEffect(() => {
-    const fetchPlannings = async () => {
-      const db = getFirestore();
-      const querySnapshot = await getDocs(collection(db, "plannings"));
-      const planningsData = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setPlannings(planningsData);
-    };
+  // useEffect(() => {
+  //   const fetchPlannings = async () => {
+  //     const db = getFirestore();
+  //     const querySnapshot = await getDocs(collection(db, "plannings"));
+  //     const planningsData = querySnapshot.docs.map((doc) => ({
+  //       id: doc.id,
+  //       ...doc.data(),
+  //     }));
+  //     setPlannings(planningsData);
+  //   };
 
-    fetchPlannings();
-  }, []);
+  //   fetchPlannings();
+  // }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchPlannings = async () => {
+        const db = getFirestore();
+        const querySnapshot = await getDocs(collection(db, "plannings"));
+        const planningsData = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setPlannings(planningsData);
+      };
+
+      fetchPlannings();
+    }, [])
+  );
 
   return (
     <SafeAreaView style={styles.safeArea}>
