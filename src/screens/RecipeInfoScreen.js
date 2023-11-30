@@ -57,7 +57,7 @@ const RecipeInfoScreen = ({ navigation, route }) => {
   };
 
   if (!recipe) {
-    return <Text>Loading...</Text>; // Or any loading indicator you prefer
+    return <Text>Loading...</Text>;
   }
 
   return (
