@@ -1,105 +1,109 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
-  StyleSheet,
-  Text,
   View,
-  ScrollView,
+  Text,
   TouchableOpacity,
+  FlatList,
+  StyleSheet,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { db } from "../../firestore/config";
 
-const GroceryListScreen = ({ navigation }) => {
-  // Mock data
-  const [groceries, setGroceries] = useState([
-    { id: "1", name: "Manzanas", quantity: "2 kg", purchased: false },
-    { id: "2", name: "Pan integral", quantity: "500 g", purchased: false },
-    { id: "3", name: "Leche de soja", quantity: "1 litro", purchased: false },
-    { id: "4", name: "Crema de cacahuete", quantity: "1 kg", purchased: false },
-    { id: "5", name: "Pechuga de pollo", quantity: "800 g", purchased: false },
-  ]);
+const PlanGroceryList = ({ route, navigation }) => {
+  const { planningId } = route.params;
+  const [groceryList, setGroceryList] = useState([]);
 
-  const togglePurchased = (id) => {
-    setGroceries((currentGroceries) => {
-      // First, update the purchased status of the clicked item
-      const updatedGroceries = currentGroceries.map((item) => {
-        if (item.id === id) {
-          return { ...item, purchased: !item.purchased };
+  useEffect(() => {
+    const fetchGroceryList = async () => {
+      try {
+        const docRef = doc(db, "plannings", planningId);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          setGroceryList(docSnap.data().groceryList || []);
+        } else {
+          console.log("No such planning!");
         }
-        return item;
-      });
+      } catch (error) {
+        console.error("Error fetching grocery list: ", error);
+      }
+    };
 
-      // Then, sort the array so unpurchased items are at the top
-      return updatedGroceries.sort((a, b) => {
-        if (a.purchased === b.purchased) {
-          return 0; // No change in order if both have the same purchased status
-        }
-        return a.purchased ? 1 : -1; // Unpurchased items come first
-      });
-    });
+    fetchGroceryList();
+  }, [planningId]);
+
+  const togglePurchased = async (ingredientId) => {
+    // Function to toggle the 'purchased' state of an ingredient
+    const newList = groceryList.map((item) =>
+      item.ingredient_id === ingredientId
+        ? { ...item, purchased: !item.purchased }
+        : item
+    );
+
+    setGroceryList(newList);
+
+    // Update Firestore document
+    try {
+      const docRef = doc(db, "plannings", planningId);
+      await updateDoc(docRef, { groceryList: newList });
+    } catch (error) {
+      console.error("Error updating grocery list: ", error);
+    }
   };
 
+  const renderItem = ({ item }) => (
+    <TouchableOpacity
+      style={[styles.ingredientCard, item.purchased && styles.purchased]}
+      onPress={() => togglePurchased(item.ingredient_id)}
+    >
+      <View style={styles.ingredientInfo}>
+        <Text style={styles.ingredientName}>{item.name}</Text>
+        <Text style={styles.ingredientQuantity}>{item.quantity} grams</Text>
+      </View>
+      <MaterialCommunityIcons
+        name={
+          item.purchased ? "checkbox-marked-outline" : "checkbox-blank-outline"
+        }
+        size={24}
+        color="black"
+      />
+    </TouchableOpacity>
+  );
+
   return (
-    <View style={styles.container}>
-      <ScrollView style={styles.scrollView}>
-        {groceries.map((item) => (
-          <TouchableOpacity
-            key={item.id}
-            style={[
-              styles.itemContainer,
-              item.purchased ? styles.itemPurchased : null,
-            ]}
-            onPress={() => togglePurchased(item.id)}
-          >
-            <View style={styles.itemTextContainer}>
-              <Text style={styles.itemName}>{item.name}</Text>
-              <Text style={styles.itemQuantity}>{item.quantity}</Text>
-            </View>
-            <MaterialCommunityIcons
-              name={
-                item.purchased
-                  ? "checkbox-marked-circle"
-                  : "checkbox-blank-circle-outline"
-              }
-              size={24}
-              color="gray"
-            />
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-    </View>
+    <FlatList
+      data={groceryList}
+      renderItem={renderItem}
+      keyExtractor={(item) => item.ingredient_id}
+    />
   );
 };
 
-export default GroceryListScreen;
-
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-  },
-  itemContainer: {
+  ingredientCard: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
     backgroundColor: "white",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 12,
-    marginBottom: 8,
+    opacity: 1.0,
   },
-  itemPurchased: {
+  purchased: {
     opacity: 0.4,
   },
-  itemTextContainer: {
-    flex: 1,
+  ingredientInfo: {
+    // styles for ingredient info container
   },
-  itemName: {
-    fontSize: 16,
+  ingredientName: {
     fontWeight: "600",
-    marginBottom: 4,
   },
-  itemQuantity: {
-    fontSize: 14,
+  ingredientQuantity: {
     color: "gray",
   },
+  // ...other styles...
 });
+
+export default PlanGroceryList;
