@@ -83,8 +83,13 @@ const PlanInfoScreen = ({ route, navigation }) => {
                   ? `${recipes[dateObj.afternoonMeal.recipeId].prepTime} min`
                   : "Loading..."
               }
-              peopleCount={dateObj.afternoonMeal.people.length.toString()}
-              // onPress or other properties as needed
+              peopleCount={dateObj.eveningMeal.people.length.toString()}
+              onPress={() =>
+                navigation.navigate("Receta", {
+                  recipeId: dateObj.afternoonMeal.recipeId,
+                  peopleCount: dateObj.afternoonMeal.people.length,
+                })
+              }
             />
             <MealCard
               category="Cena"
@@ -97,7 +102,12 @@ const PlanInfoScreen = ({ route, navigation }) => {
                   : "Loading..."
               }
               peopleCount={dateObj.eveningMeal.people.length.toString()}
-              // onPress or other properties as needed
+              onPress={() =>
+                navigation.navigate("Receta", {
+                  recipeId: dateObj.eveningMeal.recipeId,
+                  peopleCount: dateObj.eveningMeal.people.length,
+                })
+              }
             />
           </View>
         ))}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   SafeAreaView,
   ScrollView,
@@ -8,116 +8,77 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { doc, getDoc, getFirestore } from "firebase/firestore";
 
-const RecipeInfoScreen = ({ navigation }) => {
-  const data = {
-    title: "Burritos Maravilla",
-    prepTime: "40 min",
-    peopleCount: 3,
-    ingredients: [
-      { id: 1, text: "Fajitas integrales" },
-      { id: 2, text: "Salsa nakama" },
-      // ... more ingredients
-    ],
-    steps: [
-      { id: 1, text: "Calienta las fajitas." },
-      {
-        id: 2,
-        text: "Moja las fajitas en salsa nakama y a disfrutar de tu maravillosa comida.",
-      },
-      // ... more steps
-    ],
+const RecipeInfoScreen = ({ navigation, route }) => {
+  const { recipeId, peopleCount } = route.params;
+  const [recipe, setRecipe] = useState(null);
+
+  useEffect(() => {
+    const fetchRecipe = async () => {
+      try {
+        const db = getFirestore();
+        const docRef = doc(db, "recipes", recipeId);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          setRecipe(docSnap.data());
+        } else {
+          console.log("Recipe not found");
+        }
+      } catch (error) {
+        console.error("Error fetching recipe: ", error);
+      }
+    };
+
+    fetchRecipe();
+  }, [recipeId]);
+
+  // Helper function to render ingredients
+  const renderIngredients = () => {
+    return recipe.ingredients.map((ingredient, index) => (
+      <View key={index} style={styles.itemContainer}>
+        <Text style={styles.itemText}>
+          {ingredient.name} - {ingredient.quantity}
+        </Text>
+      </View>
+    ));
   };
 
-  const [activeTab, setActiveTab] = useState("ingredients"); // State to manage active tab
-  const [completedSteps, setCompletedSteps] = useState({});
+  // Helper function to render preparation steps
+  const renderSteps = () => {
+    return recipe.steps.map((step, index) => (
+      <View key={index} style={styles.stepContainer}>
+        <Text style={styles.stepText}>
+          {index + 1}. {step}
+        </Text>
+      </View>
+    ));
+  };
+
+  if (!recipe) {
+    return <Text>Loading...</Text>; // Or any loading indicator you prefer
+  }
 
   return (
-    <SafeAreaView>
-      <View style={styles.content}>
-        <Text style={styles.title}>{data.title}</Text>
-        <View style={styles.subtitleContainer}>
-          <Ionicons name="time-outline" size={18} color="gray" />
-          <Text style={styles.iconText}> {data.prepTime}</Text>
-          <Ionicons
-            name="person-outline"
-            size={18}
-            color="gray"
-            style={styles.iconSpacing}
-          />
-          <Text style={styles.iconText}> {data.peopleCount} personas</Text>
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView style={styles.scrollView}>
+        <Text style={styles.title}>{recipe.name}</Text>
+        <View style={styles.infoContainer}>
+          <Text style={styles.infoText}>
+            Tiempo de preparación: {recipe.prepTime} minutos
+          </Text>
+          <Text style={styles.infoText}>Para {peopleCount} personas</Text>
         </View>
-
-        <View style={styles.tabContainer}>
-          <TouchableOpacity
-            style={[
-              styles.tab,
-              activeTab === "ingredients" && styles.activeTab,
-            ]}
-            onPress={() => setActiveTab("ingredients")}
-          >
-            <Text
-              style={[
-                styles.tabText,
-                activeTab === "ingredients" && styles.activeTabText,
-              ]}
-            >
-              Ingredientes
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.tab, activeTab === "steps" && styles.activeTab]}
-            onPress={() => setActiveTab("steps")}
-          >
-            <Text
-              style={[
-                styles.tabText,
-                activeTab === "steps" && styles.activeTabText,
-              ]}
-            >
-              Pasos
-            </Text>
-          </TouchableOpacity>
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionTitle}>Ingredientes</Text>
+          {renderIngredients()}
         </View>
-        <View style={styles.tabContent}>
-          {activeTab === "ingredients"
-            ? data.ingredients.map((ingredient) => (
-                <View key={ingredient.id} style={styles.itemContainer}>
-                  <Text style={styles.itemText}>{ingredient.text}</Text>
-                </View>
-              ))
-            : data.steps.map((step) => (
-                <TouchableOpacity
-                  key={step.id}
-                  style={[
-                    styles.stepContainer,
-                    completedSteps[step.id] ? { opacity: 0.4 } : null,
-                  ]}
-                  onPress={() => {
-                    setCompletedSteps({
-                      ...completedSteps,
-                      [step.id]: !completedSteps[step.id],
-                    });
-                  }}
-                >
-                  <View style={{ flex: 1 }}>
-                    <View style={styles.stepNumberCircle}>
-                      <Text style={styles.stepNumberText}>{step.id}</Text>
-                    </View>
-                    <Text style={styles.stepText}>{step.text}</Text>
-                  </View>
-                  <Ionicons
-                    name={
-                      completedSteps[step.id] ? "checkbox" : "square-outline"
-                    }
-                    size={24}
-                    color="black"
-                    style={{ marginLeft: 8 }}
-                  />
-                </TouchableOpacity>
-              ))}
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionTitle}>Pasos</Text>
+          {renderSteps()}
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -125,54 +86,40 @@ const RecipeInfoScreen = ({ navigation }) => {
 export default RecipeInfoScreen;
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    padding: 10,
+  },
+  scrollView: {
+    padding: 20,
+  },
   title: {
     fontSize: 24,
     fontWeight: "600",
+    textAlign: "center",
+    marginVertical: 10,
   },
-  content: {
-    padding: 20,
-  },
-  subtitleContainer: {
-    flexDirection: "row",
+  infoContainer: {
     alignItems: "center",
-    marginTop: 12,
+    marginBottom: 20,
   },
-  iconText: {
+  infoText: {
+    fontSize: 16,
     color: "gray",
-    marginLeft: 0,
   },
-  iconSpacing: {
-    marginLeft: 16,
+  sectionContainer: {
+    marginBottom: 20,
   },
-  tabContainer: {
-    flexDirection: "row",
-    marginTop: 16,
-  },
-  tab: {
-    flex: 1,
-    paddingVertical: 12,
-    alignItems: "center",
-    borderRadius: 20,
-    marginHorizontal: 4,
-  },
-  activeTab: {
-    backgroundColor: "green",
-  },
-  tabText: {
-    fontWeight: "500",
-    color: "black",
-  },
-  activeTabText: {
-    color: "white",
-  },
-  tabContent: {
-    marginTop: 16,
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 10,
   },
   itemContainer: {
     backgroundColor: "white",
-    padding: 16,
-    marginVertical: 4,
+    padding: 10,
     borderRadius: 8,
+    marginVertical: 4,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -181,37 +128,21 @@ const styles = StyleSheet.create({
   },
   itemText: {
     color: "black",
+    fontSize: 16,
   },
   stepContainer: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    justifyContent: "space-between",
     backgroundColor: "white",
-    padding: 16,
-    marginVertical: 4,
+    padding: 10,
     borderRadius: 8,
+    marginVertical: 4,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
   },
-  stepNumberCircle: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: "black",
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 8,
-    marginBottom: 8,
-  },
-  stepNumberText: {
-    color: "white",
-    fontWeight: "bold",
-  },
   stepText: {
     color: "black",
-    paddingRight: 16,
+    fontSize: 16,
   },
 });
