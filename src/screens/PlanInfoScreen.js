@@ -76,9 +76,7 @@ const PlanInfoScreen = ({ route, navigation }) => {
           }
           style={styles.groceryListButton}
         >
-          <Text style={styles.groceryListButtonText}>
-            Ver lista de la compra
-          </Text>
+          <Text style={styles.groceryListButtonText}>Ver cositas</Text>
         </TouchableOpacity>
         {planning?.dates.map((dateObj, index) => (
           <View key={index}>
