@@ -1,27 +1,13 @@
 import React, { useState, useEffect } from "react";
-
-import {
-  SafeAreaView,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-  ScrollView,
-  Text,
-} from "react-native";
+import {SafeAreaView, StyleSheet, TouchableOpacity, View, ScrollView, Text} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import PlanCard from "../components/Plans/PlanCard";
-
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../firestore/config";
-
-import {
-  createPlanning,
-  fetchRecipeDetails,
-} from "../../firestore/funciones.js";
+import {createPlanning, fetchRecipeDetails} from "../../firestore/funciones.js";
 import { adjustIngredientQuantities } from "../utils/adjustedQuantities.js";
 
 const NewPlanScreen = ({ navigation }) => {
-  // Initialize plans
   const [plans, setPlans] = useState([
     {
       date: new Date(),
@@ -33,7 +19,7 @@ const NewPlanScreen = ({ navigation }) => {
         people: ["Javi", "Diego", "Alvaro"],
         recipeId: "", // Placeholder
       },
-    },
+    },  
   ]);
 
   const [recipeIds, setRecipeIds] = useState([]);
@@ -44,25 +30,13 @@ const NewPlanScreen = ({ navigation }) => {
       const ids = querySnapshot.docs.map((doc) => doc.id);
       setRecipeIds(ids);
     };
-
     fetchRecipes();
   }, []);
-
-  const updatePlan = (index, updatedPlan) => {
-    const newPlans = [...plans];
-    newPlans[index] = updatedPlan;
-    setPlans(newPlans);
-    console.log(
-      `updatePlan called. Index: ${index}, Updated Plan: `,
-      updatedPlan
-    );
-  };
 
   const addPlanCard = () => {
     const lastPlanDate = plans[plans.length - 1].date;
     const newDate = new Date(lastPlanDate);
     newDate.setDate(newDate.getDate() + 1);
-
     setPlans([
       ...plans,
       {
@@ -79,6 +53,14 @@ const NewPlanScreen = ({ navigation }) => {
     ]);
   };
 
+  const updatePlan = (index, updatedPlan) => {
+    const newPlans = [...plans];
+    newPlans[index] = updatedPlan;
+    setPlans(newPlans);
+    console.log(`updatePlan called. Index: ${index}, Updated Plan: `
+    );
+  };
+   
   const aggregateIngredients = (plans) => {
     const allIngredients = {};
 
@@ -107,35 +89,28 @@ const NewPlanScreen = ({ navigation }) => {
 
   const createPlan = async () => {
     console.log("Plans before serialization: ", plans);
+    console.log("--------------------------------------------------------------------------");
 
     try {
       const adjustedPlans = await Promise.all(
         plans.map(async (plan) => {
-          // Assign a random recipe ID to each meal
-          const afternoonMealRecipeId =
-            recipeIds[Math.floor(Math.random() * recipeIds.length)];
-          const eveningMealRecipeId =
-            recipeIds[Math.floor(Math.random() * recipeIds.length)];
+          let idRandom = Math.floor(Math.random() * recipeIds.length);
+          const afternoonMealRecipeId = recipeIds[idRandom];
+          setRecipeIds(recipeIds.splice(idRandom, 1))
 
-          // Fetch recipe details for afternoon and evening meals
-          const afternoonRecipeDetails = await fetchRecipeDetails(
-            afternoonMealRecipeId
-          );
-          const eveningRecipeDetails = await fetchRecipeDetails(
-            eveningMealRecipeId
-          );
+          idRandom = Math.floor(Math.random() * recipeIds.length);
+          const eveningMealRecipeId = recipeIds[idRandom];
+          setRecipeIds(recipeIds.splice(idRandom, 1))
+          
 
-          // Debug logs
-          // console.log("Afternoon recipe details:", afternoonRecipeDetails);
-          // console.log("Evening recipe details:", eveningRecipeDetails);
+          const afternoonRecipeDetails = await fetchRecipeDetails( afternoonMealRecipeId );
+          const eveningRecipeDetails = await fetchRecipeDetails( eveningMealRecipeId );
 
-          // Check if recipe details were successfully fetched
           if (!afternoonRecipeDetails || !eveningRecipeDetails) {
             console.error("Recipe details not found for one or more meals.");
             return null; // Skip this iteration
           }
 
-          // Adjust quantities based on the number of people for each meal
           const adjustIngredients = (ingredients, peopleCount) =>
             ingredients.map((ingredient) => ({
               ...ingredient,
@@ -151,7 +126,6 @@ const NewPlanScreen = ({ navigation }) => {
             plan.eveningMeal.people.length
           );
 
-          // Return a new plan object with adjusted ingredients
           return {
             date: plan.date.toISOString().split("T")[0],
             afternoonMeal: {
@@ -168,15 +142,13 @@ const NewPlanScreen = ({ navigation }) => {
         })
       );
 
-      // Filter out null entries (if any)
       const validAdjustedPlans = adjustedPlans.filter((plan) => plan !== null);
 
       if (validAdjustedPlans.length === 0) {
         console.error("No valid plans were created.");
-        return; // Exit the function
+        return; 
       }
 
-      // Aggregate ingredients to create the grocery list
       const groceryList = aggregateIngredients(validAdjustedPlans);
 
       const planningData = { dates: validAdjustedPlans, groceryList };
@@ -193,7 +165,6 @@ const NewPlanScreen = ({ navigation }) => {
       // Optionally, provide feedback to the user that an error occurred
     }
   };
-
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.screen}>
