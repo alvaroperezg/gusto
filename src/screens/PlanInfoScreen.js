@@ -10,14 +10,30 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import MealCard from "../components/Plans/MealCard";
 import { doc, getDoc, getFirestore } from "firebase/firestore";
+import { getItems } from "../utils/commonFunctions.js";
+import { db } from "../../firestore/config.js";
 
 const PlanInfoScreen = ({ route, navigation }) => {
   const { planningId } = route.params;
   const [planning, setPlanning] = useState(null);
   const [recipes, setRecipes] = useState({});
+  
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     const fetchPlannings = async () => {
+  //       const querySnapshot = await getDocs(collection(db, "plannings"));
+  //       const planningsData = querySnapshot.docs.map((doc) => ({
+  //         id: doc.id,
+  //         ...doc.data(),
+  //       }));
+  //       setPlannings(planningsData);
+  //     };
+
+  //     fetchPlannings();
+  //   }, [])
+  // );
 
   useEffect(() => {
-    const db = getFirestore();
     const fetchPlanning = async () => {
       try {
         const docRef = doc(db, "plannings", planningId);
@@ -79,6 +95,15 @@ const PlanInfoScreen = ({ route, navigation }) => {
           <Text style={styles.groceryListButtonText}>
             Ver lista de la compra
           </Text>
+          <TouchableOpacity
+          onPress={() => getItems(planning) }
+          style={styles.groceryListButton}
+          >
+            <Text style={styles.groceryListButtonText}>
+              4/20
+            </Text>
+          </TouchableOpacity>
+          
         </TouchableOpacity>
         {planning?.dates.map((dateObj, index) => (
           <View key={index}>
