@@ -11,78 +11,33 @@ import { Ionicons } from "@expo/vector-icons";
 import MealCard from "../components/Plans/MealCard";
 import { doc, getDoc, getFirestore } from "firebase/firestore";
 import { getItems } from "../utils/commonFunctions.js";
-import { db } from "../../firestore/config.js";
+import { useFocusEffect } from "@react-navigation/native";
+import { fetchPlanning } from "../utils/planInfoFunctions.js";
 
 const PlanInfoScreen = ({ route, navigation }) => {
   const { planningId } = route.params;
   const [planning, setPlanning] = useState(null);
   const [recipes, setRecipes] = useState({});
+  const [itemList, setItemList] = useState({ purchased: 0, total: 0 });
   
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     const fetchPlannings = async () => {
-  //       const querySnapshot = await getDocs(collection(db, "plannings"));
-  //       const planningsData = querySnapshot.docs.map((doc) => ({
-  //         id: doc.id,
-  //         ...doc.data(),
-  //       }));
-  //       setPlannings(planningsData);
-  //     };
-
-  //     fetchPlannings();
-  //   }, [])
-  // );
-
   useEffect(() => {
-    const fetchPlanning = async () => {
-      try {
-        const docRef = doc(db, "plannings", planningId);
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-          const planningData = docSnap.data();
-          planningData.dates = planningData.dates.map((dateObj) => ({
-            ...dateObj,
-            date: new Date(dateObj.date),
-          }));
-          setPlanning(planningData);
-
-          const uniqueRecipeIds = [
-            ...new Set(
-              planningData.dates.flatMap((dateObj) => [
-                dateObj.afternoonMeal.recipeId,
-                dateObj.eveningMeal.recipeId,
-              ])
-            ),
-          ];
-          const recipeDetails = {};
-          for (const recipeId of uniqueRecipeIds) {
-            if (!recipeDetails[recipeId]) {
-              // Check if not already fetched
-              const recipeDoc = await getDoc(doc(db, "recipes", recipeId));
-              if (recipeDoc.exists()) {
-                recipeDetails[recipeId] = recipeDoc.data();
-              } else {
-                console.log(`No such recipe with ID: ${recipeId}`);
-              }
-            }
-          }
-          setRecipes(recipeDetails);
-        } else {
-          console.log("No such planning!");
-        }
-      } catch (error) {
-        console.error("Error fetching planning: ", error);
-      }
-    };
-
-    fetchPlanning();
+    fetchPlanning(planningId, setPlanning, setRecipes);
   }, [planningId]);
-
-  // Helper function to format date
+  
+  useEffect(() => {
+    if (planning) {
+      const newItems = getItems(planning);
+      setItemList(newItems);
+    }
+  }, [planning]);
   const formatDate = (date) =>
     date.toLocaleDateString("es-ES", { day: "numeric", month: "long" });
-
+    
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchPlanning(planningId, setPlanning, setRecipes)
+    }, [])
+  );
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
@@ -95,15 +50,9 @@ const PlanInfoScreen = ({ route, navigation }) => {
           <Text style={styles.groceryListButtonText}>
             Ver lista de la compra
           </Text>
-          <TouchableOpacity
-          onPress={() => getItems(planning) }
-          style={styles.groceryListButton}
-          >
             <Text style={styles.groceryListButtonText}>
-              4/20
+            {itemList ? `${itemList.purchased}/${itemList.total}` : 'Loading...'}
             </Text>
-          </TouchableOpacity>
-          
         </TouchableOpacity>
         {planning?.dates.map((dateObj, index) => (
           <View key={index}>
@@ -154,7 +103,6 @@ const PlanInfoScreen = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  // Define your styles here
   container: {
     flex: 1,
     padding: 10,
