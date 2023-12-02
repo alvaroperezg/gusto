@@ -31,7 +31,6 @@ const PlanGroceryList = ({ route, navigation }) => {
         console.error("Error fetching grocery list: ", error);
       }
     };
-
     fetchGroceryList();
   }, [planningId]);
 
