@@ -1,4 +1,4 @@
-import { doc, docs, getDocs, collection, addDoc } from "firebase/firestore";
+import { doc, docs, getDocs, collection } from "firebase/firestore";
 import { db } from '../../firestore/config.js';
 import {createPlanning, fetchRecipeDetails} from "../../firestore/funciones.js";
 
@@ -40,10 +40,7 @@ export async function updatePlan(index, updatedPlan, plans, setPlans){
     );
   };
    
-export async function createPlan(recipeIds, setRecipeIds, plans){
-  console.log("Plans before serialization: ", plans);
-  console.log("--------------------------------------------------------------------------");
-
+export async function createPlan(recipeIds, setRecipeIds, plans, navigation){
   try {
     const adjustedPlans = await Promise.all(
       plans.map(async (plan) => {
@@ -54,7 +51,6 @@ export async function createPlan(recipeIds, setRecipeIds, plans){
         idRandom = Math.floor(Math.random() * recipeIds.length);
         const eveningMealRecipeId = recipeIds[idRandom];
         setRecipeIds(recipeIds.splice(idRandom, 1))
-        
 
         const afternoonRecipeDetails = await fetchRecipeDetails( afternoonMealRecipeId );
         const eveningRecipeDetails = await fetchRecipeDetails( eveningMealRecipeId );
@@ -101,8 +97,7 @@ export async function createPlan(recipeIds, setRecipeIds, plans){
       console.error("No valid plans were created.");
       return; 
     }
-    const groceryList = aggregateIngredients(validAdjustedPlans);
-
+    const groceryList = await aggregateIngredients(validAdjustedPlans);
     const planningData = { dates: validAdjustedPlans, groceryList };
     console.log("Creating Planning Data:", planningData);
 

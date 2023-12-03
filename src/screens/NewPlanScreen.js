@@ -39,7 +39,7 @@ const NewPlanScreen = ({ navigation }) => {
             <Ionicons name="add" size={24} color="white" />
           </TouchableOpacity>
         </ScrollView>
-        <TouchableOpacity style={styles.createPlanButton} onPress={() =>createPlan(recipeIds, setRecipeIds, plans)}>
+        <TouchableOpacity style={styles.createPlanButton} onPress={() =>createPlan(recipeIds, setRecipeIds, plans, navigation)}>
           <Text style={styles.createPlanButtonText}>Crear plan</Text>
         </TouchableOpacity>
       </View>
