@@ -13,8 +13,6 @@ const PlanGroceryList = ({ route, navigation }) => {
   const { planningId } = route.params;
   const [groceryList, setGroceryList] = useState([]);
 
-console.log(planningId)
-
   useEffect(() => {
     fetchGroceryList(setGroceryList, planningId);
   }, [planningId]);
