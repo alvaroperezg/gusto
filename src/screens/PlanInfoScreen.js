@@ -15,6 +15,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { fetchPlanning } from "../utils/planInfoFunctions.js";
 
 const PlanInfoScreen = ({ route, navigation }) => {
+  console.log("entro plan info screen")
   const { planningId } = route.params;
   const [planning, setPlanning] = useState(null);
   const [recipes, setRecipes] = useState({});
@@ -57,6 +58,7 @@ const PlanInfoScreen = ({ route, navigation }) => {
         {planning?.dates.map((dateObj, index) => (
           <View key={index}>
             <Text style={styles.dateText}>{formatDate(dateObj.date)}</Text>
+            {dateObj.afternoonMeal !== 'NONE' && (
             <MealCard
               category="Comida"
               title={
@@ -76,6 +78,8 @@ const PlanInfoScreen = ({ route, navigation }) => {
                 })
               }
             />
+            )}
+            {dateObj.eveningMeal !== 'NONE' && (
             <MealCard
               category="Cena"
               title={
@@ -95,6 +99,7 @@ const PlanInfoScreen = ({ route, navigation }) => {
                 })
               }
             />
+            )}
           </View>
         ))}
       </ScrollView>
