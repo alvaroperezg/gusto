@@ -1,10 +1,4 @@
-import {
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import React, { useEffect, useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { collection, getDocs, getFirestore } from "firebase/firestore";
@@ -16,11 +10,9 @@ const PlansScreen = ({ navigation }) => {
   const [plannings, setPlannings] = useState([]);
 
   const PlanningCard = ({ planning, onPress }) => {
-    // Extracting the first and last date
     const startDate = planning.dates[0]?.date;
     const endDate = planning.dates[planning.dates.length - 1]?.date;
 
-    // Formatting the dates (you can adjust the format as needed)
     const formattedStartDate = startDate
       ? new Date(startDate).toLocaleDateString("es-ES")
       : "";
