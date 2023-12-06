@@ -75,19 +75,51 @@ export async function createPlan(recipeIds, setRecipeIds, plans, navigation){
           plan.eveningMeal.people.length
         );
 
-        return {
-          date: plan.date.toISOString().split("T")[0],
-          afternoonMeal: {
-            people: plan.afternoonMeal.people,
-            recipeId: afternoonMealRecipeId,
-            adjustedIngredients: adjustedAfternoonMealIngredients,
-          },
-          eveningMeal: {
-            people: plan.eveningMeal.people,
-            recipeId: eveningMealRecipeId,
-            adjustedIngredients: adjustedEveningMealIngredients,
-          },
-        };
+        let number_meals=0
+        let control_array=[]
+
+        if(plan.afternoonMeal.people.length !=0) number_meals=number_meals+1
+        if(plan.eveningMeal.people.length !=0) number_meals=number_meals+2
+        switch(number_meals){
+          case 1:
+            control_array = {
+              date: plan.date.toISOString().split("T")[0],
+              eveningMeal:"NONE",
+              afternoonMeal: {
+                people: plan.afternoonMeal.people,
+                recipeId: afternoonMealRecipeId,
+                adjustedIngredients: adjustedAfternoonMealIngredients,
+              }
+              }
+            break;
+          case 2:
+            control_array = {
+              date: plan.date.toISOString().split("T")[0],
+              afternoonMeal:"NONE",
+              eveningMeal: {
+                people: plan.eveningMeal.people,
+                recipeId: eveningMealRecipeId,
+                adjustedIngredients: adjustedEveningMealIngredients,
+                }
+              }
+            break;
+          case 3:
+            control_array = {
+              date: plan.date.toISOString().split("T")[0],
+              afternoonMeal: {
+                people: plan.afternoonMeal.people,
+                recipeId: afternoonMealRecipeId,
+                adjustedIngredients: adjustedAfternoonMealIngredients,
+              },
+              eveningMeal: {
+                people: plan.eveningMeal.people,
+                recipeId: eveningMealRecipeId,
+                adjustedIngredients: adjustedEveningMealIngredients,
+              }
+            }
+            break;
+        }
+        return control_array;
       })
     );
 
@@ -112,29 +144,39 @@ export async function createPlan(recipeIds, setRecipeIds, plans, navigation){
     // Optionally, provide feedback to the user that an error occurred
   }
 };
-
 export async function aggregateIngredients(plans){
   const allIngredients = {};
 
   plans.forEach((plan) => {
-    // Aggregate ingredients from afternoon and evening meals
-    [
-      ...plan.afternoonMeal.adjustedIngredients,
-      ...plan.eveningMeal.adjustedIngredients,
-    ].forEach((ingredient) => {
-      if (allIngredients[ingredient.ingredient_id]) {
-        // Sum the quantities if the ingredient already exists
-        allIngredients[ingredient.ingredient_id].quantity +=
-          ingredient.quantity;
-      } else {
-        // Add the ingredient with the purchased flag
-        allIngredients[ingredient.ingredient_id] = {
-          ...ingredient,
-          purchased: false,
-        };
-      }
-    });
+    if (plan.afternoonMeal !== "NONE") {
+      plan.afternoonMeal.adjustedIngredients.forEach((ingredient) => {
+        if (allIngredients[ingredient.ingredient_id]) {
+          allIngredients[ingredient.ingredient_id].quantity += ingredient.quantity;
+        } else {
+          allIngredients[ingredient.ingredient_id] = {
+            ...ingredient,
+            purchased: false,
+          };
+        }
+      });
+    }
+    if (plan.eveningMeal !== "NONE") {
+      plan.eveningMeal.adjustedIngredients.forEach((ingredient) => {
+        if (allIngredients[ingredient.ingredient_id]) {
+          allIngredients[ingredient.ingredient_id].quantity += ingredient.quantity;
+        } else {
+          allIngredients[ingredient.ingredient_id] = {
+            ...ingredient,
+            purchased: false,
+          };
+        }
+      });
+    }
   });
+
+//   return allIngredients;
+// };
+
 
     return Object.values(allIngredients); // Convert the object back to an array
   };

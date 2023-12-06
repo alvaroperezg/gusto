@@ -1,11 +1,10 @@
 import { doc, getDoc } from "firebase/firestore";
 import { db } from '../../firestore/config.js';
-
-export async function fetchPlanning (planningId, setPlanning, setRecipes){
+export async function fetchPlanning(planningId, setPlanning, setRecipes) {
     try {
       const docRef = doc(db, "plannings", planningId);
       const docSnap = await getDoc(docRef);
-
+  
       if (docSnap.exists()) {
         const planningData = docSnap.data();
         planningData.dates = planningData.dates.map((dateObj) => ({
@@ -13,19 +12,22 @@ export async function fetchPlanning (planningId, setPlanning, setRecipes){
           date: new Date(dateObj.date),
         }));
         setPlanning(planningData);
-
+  
         const uniqueRecipeIds = [
           ...new Set(
-            planningData.dates.flatMap((dateObj) => [
-              dateObj.afternoonMeal.recipeId,
-              dateObj.eveningMeal.recipeId,
-            ])
+            planningData.dates.flatMap((dateObj) => {
+              // Filtra los recipeId cuando afternoonMeal es 'NONE'
+              const ids = [];
+              if (dateObj.afternoonMeal !== 'NONE') ids.push(dateObj.afternoonMeal.recipeId);
+              if (dateObj.eveningMeal !== 'NONE') ids.push(dateObj.eveningMeal.recipeId);
+              return ids;
+            })
           ),
         ];
+  
         const recipeDetails = {};
         for (const recipeId of uniqueRecipeIds) {
-          if (!recipeDetails[recipeId]) {
-            // Check if not already fetched
+          if (recipeId !== 'NONE' && !recipeDetails[recipeId]) {
             const recipeDoc = await getDoc(doc(db, "recipes", recipeId));
             if (recipeDoc.exists()) {
               recipeDetails[recipeId] = recipeDoc.data();
@@ -42,3 +44,4 @@ export async function fetchPlanning (planningId, setPlanning, setRecipes){
       console.error("Error fetching planning: ", error);
     }
   };
+  
