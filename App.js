@@ -8,15 +8,10 @@ import PlansScreen from "./src/screens/PlansScreen";
 import NewPlanScreen from "./src/screens/NewPlanScreen";
 
 //CONFIGURACION FIRESTORE
-import { db } from "./firestore/config.js";
-import {
-  dameDocManin,
-  dameDocsChacho,
-  tomaPlanningPrimo,
-} from "./firestore/funciones.js";
 import PlanInfoScreen from "./src/screens/PlanInfoScreen";
 import RecipeInfoScreen from "./src/screens/RecipeInfoScreen.js";
 import GroceryListScreen from "./src/screens/GroceryListScreen.js";
+import LoginScreen from "./src/screens/LoginScreen.js";
 
 export default function App() {
   // para navegación entre pantallas
@@ -38,6 +33,7 @@ export default function App() {
         />
         <Stack.Screen name="Lista de la compra" component={GroceryListScreen} />
         <Stack.Screen name="Receta" component={RecipeInfoScreen} />
+        <Stack.Screen name="Login" component={LoginScreen} />
         {/* otras pantallas van aquí */}
       </Stack.Navigator>
     </NavigationContainer>
